@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: graphdb-ingress
+  annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
+    #nginx.ingress.kubernetes.io/add-base-url: "true"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: graphdb.org
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: graphdb-service
+              port:
+                number: 7001
+          

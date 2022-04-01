@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb   
+spec:
+  serviceName: "influxdb-service"
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:    
+      containers:
+      - name: influxdb
+        image: quay.io/influxdb/influxdb:2.1.1
+        resources:
+          limits:
+            memory: "800Mi"
+            cpu: 2
+        ports:
+        - name: gui
+          containerPort: 8086
+        volumeMounts:
+        - name: data
+          mountPath: /root/.influxdbv2
+  volumeClaimTemplates: #https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-storage
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        volumeMode: Filesystem

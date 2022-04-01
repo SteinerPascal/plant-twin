@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: graphdb   
+spec:
+  serviceName: "graphdb-service"
+  selector:
+    matchLabels:
+      app: graphdb
+  template:
+    metadata:
+      labels:
+        app: graphdb
+    spec:    
+      containers:
+      - name: graphdb
+        image:  ontotext/graphdb:9.10.2-se #local ip from my machine
+        resources:
+          limits:
+            memory: "800Mi"
+            cpu: 2
+        ports:
+        - name: gui-api
+          containerPort: 7200
+        volumeMounts:
+        - name: home
+          mountPath: /opt/graphdb/home
+  volumeClaimTemplates:
+    - metadata:
+        name: home
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        volumeMode: Filesystem
