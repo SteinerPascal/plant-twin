@@ -4,16 +4,37 @@ import "Sparnatural/dist/sparnatural.css"
 import Yasgui from "@triply/yasgui";
 import "@triply/yasgui/build/yasgui.min.css";
 import Tab from "@triply/yasgui/build/ts/src/Tab";
+import Yasr from "@triply/yasr"
 import * as CustomTable from "./plugins/custom-table/CustomTable";
+import RoutingModal from "./modal/RoutingModal";
+import React from "react";
 
 // custom-table: Table plugin which reroutes clicks on IRIs to react routes
 // map-plugin: Plugin which shows the result of geosparql in a map.
-const registerYasrPlugins = ()=>{
+const registerYasrPlugins = () => {
  Yasgui.Yasr.registerPlugin('custom-table',CustomTable.default as any)
 }
 
-const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
 
+const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
+  // Modal state
+  const [open, setOpen] = React.useState(false);
+  const [iriString, setIRI] = React.useState('');
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+
+  // registers click listener on YASR 
+  // CustomTable component emits YasrIriClick even on clicks on IRI's
+  const registerURICliclListener = (yasr:Yasr) => {
+    yasr.rootEl.addEventListener('YasrIriClick',(evt:Event)=>{
+      let iri = (evt as CustomEvent).detail // need to cast. see: https://github.com/microsoft/TypeScript/issues/28357
+      handleOpen()
+      setIRI(iri)
+    })
+  }
+
+  
   const refContainer = useRef<HTMLElement | null>(null);
   useEffect(() => {
     refContainer.current = document.getElementById("yasgui")
@@ -23,6 +44,7 @@ const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
       let yasg =new Yasgui(refContainer.current, { requestConfig: { endpoint: "http://localhost:7200/repositories/geneva-example" }, copyEndpointOnNewTab: true});
       let initTab = yasg.getTab()
       if(initTab){
+        registerURICliclListener(initTab.getYasr())
         initTab.getYasr().config.pluginOrder = [
           "table",
           "response",
@@ -52,6 +74,7 @@ const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
 
   return (
     <div>
+      <RoutingModal open={open} handleClose={handleClose} iri={iriString}></RoutingModal>
       <div className="row">
         <div id="yasgui" />
       </div>

@@ -268,9 +268,7 @@ export default class CustomTable implements Plugin<PluginConfig> {
         let iriEl = cell.querySelector('.iri') as HTMLAnchorElement
         if(iriEl != null){
           iriEl.addEventListener('click',()=>{
-            console.warn('CLICKED!')
-            console.log(iriEl.text)
-            new CustomEvent('YasrIriClick',{bubbles:true,detail:iriEl.text})
+            iriEl.dispatchEvent( new CustomEvent('YasrIriClick',{bubbles:true,detail:iriEl.text}))
           })
         } 
       }
