@@ -37,6 +37,7 @@ const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
   
   const refContainer = useRef<HTMLElement | null>(null);
   useEffect(() => {
+    // initialize YASGUI
     refContainer.current = document.getElementById("yasgui")
     if(refContainer.current && (refContainer.current.children.length === 0)){
       registerYasrPlugins()

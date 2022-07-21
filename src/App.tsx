@@ -7,7 +7,7 @@ function App() {
   return (
       <Routes>
         <Route path="/" element={<Manager />} />
-        <Route path="/about" element={<Twin />} />
+        <Route path="/twin" element={<Twin />} />
       </Routes>
   );
 }

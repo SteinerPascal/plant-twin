@@ -1,8 +1,8 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { Link } from 'react-router-dom';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -22,7 +22,6 @@ const btnStyle = {
 }
 
 export default function BasicModal({open,handleClose,iri}:{open:boolean,handleClose:()=>void,iri:string}) {
-
 
   return (
     <div>
@@ -44,7 +43,7 @@ export default function BasicModal({open,handleClose,iri}:{open:boolean,handleCl
           <br />
           <div>
             <Button variant="contained">Open in Web</Button>
-            <Button variant="contained" sx={btnStyle}>Open in Application</Button>
+            <Button component={Link} to={'/twin'} variant="contained" sx={btnStyle}>Open in Application</Button>
           </div>
         </Box>
       </Modal>
