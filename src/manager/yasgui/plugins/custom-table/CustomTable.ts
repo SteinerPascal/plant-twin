@@ -3,7 +3,7 @@ import Parser from "@triply/yasr/build/ts/src/parsers"
 import { escape } from "lodash-es";
 import { Plugin, DownloadInfo } from "@triply/yasr/build/ts/src/index"
 import Yasr from "@triply/yasr/build/ts/src/index"
-import { drawSvgStringAsElement, drawFontAwesomeIconAsSvg, addClass, removeClass } from "./utils"
+import { drawSvgStringAsElement, drawFontAwesomeIconAsSvg, addClass, removeClass } from "../utils"
 import * as faTableIcon from "@fortawesome/free-solid-svg-icons/faTable";
 import { DeepReadonly } from "ts-essentials";
 import { cloneDeep } from "lodash-es";
@@ -15,8 +15,6 @@ import { cloneDeep } from "lodash-es";
 require("./index.scss");
 const $ = require('jquery')
 require('datatables.net');
-
-
 
 
 const ColumnResizer = require("column-resizer");
