@@ -6,6 +6,7 @@ import Sparnatural from "./sparnatural/SparNatural";
 import "@triply/yasgui/build/yasgui.min.css";
 import Tab from "@triply/yasgui/build/ts/src/Tab";
 import Yasg from "./yasgui/yasg";
+import SparNaturalManagerBoundary from "./sparnatural/SparNaturalManagerBoundary";
 
 
 const Manager = () => {
@@ -21,7 +22,9 @@ const Manager = () => {
       <h1>Digital Twin Manager</h1>
       <div className="row">
         <div id="ui-search" style={{width:"auto"}}>
-        <Sparnatural tab={tab} ></Sparnatural>
+        <SparNaturalManagerBoundary>
+          <Sparnatural tab={tab} ></Sparnatural>
+        </SparNaturalManagerBoundary>
         </div>
       </div>
       <div className="row">

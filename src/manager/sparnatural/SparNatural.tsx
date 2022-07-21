@@ -27,7 +27,6 @@ const Sparnatural =({tab}:{tab:Tab | null}) => {
       onQueryUpdated: function(queryString:string, queryJson:any, specProvider:any) {
         queryString = semanticPostProcess(queryString, queryJson);
         queryString = specProvider.expandSparql(queryString);
-        //console.dir(tab)
         tab?.getYasqe()?.setValue(queryString)
       }
     }
