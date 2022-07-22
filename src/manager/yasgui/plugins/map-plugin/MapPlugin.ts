@@ -2,8 +2,14 @@ import {Plugin} from "@triply/yasr/build/ts/src/plugins/index"
 import Parser from "@triply/yasr/build/ts/src/parsers"
 import { drawSvgStringAsElement } from "../utils";
 import Yasr from "@triply/yasr/build/ts/src/index"
-import L, { Polygon, Rectangle } from "leaflet";
-import { DeepReadonly } from "ts-essentials";
+import L, { Polyline, Marker } from "leaflet";
+import { wktParsing } from "./wktParsing";
+
+
+/*
+    Currently this plugin supports only the wktLiteral parsing.
+    If you would like to add further parsing like GML or KML, just implement a serializer callback for parseGeoLiteral()
+*/
 
 export interface PluginConfig {
     setView: {
@@ -15,22 +21,19 @@ export interface PluginConfig {
         urlTemplate: string, 
         options?: L.TileLayerOptions
     }
+    parsingFunction: (row:DataRow, literalValue:string)=> Polyline | Marker
 }
 
-
-/*
-    Currently this plugin supports only the wktLiteral serialization.
-    If you would like to add further serialization like GML or KML, just implement a serializer with GeoSerializer interface
-
-*/
-
 type DataRow = [number, ...(Parser.BindingValue | "")[]];
+
+
+
 
 export default class MapPlugin implements Plugin<PluginConfig>{
     priority: number = 5; // priority for sorting the plugins in yasr
     private yasr:Yasr
     private mapEL:HTMLElement | null = null;
-    private map:L.Map
+    private map:L.Map | null = null
     private resultSet: DataRow[] | null = null
     private config: PluginConfig;
     hideFromSelection?: boolean = false;
@@ -49,15 +52,14 @@ export default class MapPlugin implements Plugin<PluginConfig>{
                 maxZoom: 19,
                 attribution: "© OpenStreetMap"
             }
-        }
+        },
+        parsingFunction: wktParsing
+        
     }
-
 
     constructor(yasr:Yasr){
         this.yasr = yasr;
         this.config = MapPlugin.defaults
-        this.map = L.map('map').setView(this.config.setView.center,this.config.setView.zoom,this.config.setView.options)
-        L.tileLayer(this.config.tileLayer.urlTemplate,this.config.tileLayer.options).addTo(this.map)
     }
     // Map plugin can handle results in the form of geosparql wktLiterals
     // http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf#wktLiteral
@@ -66,32 +68,47 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         if(rows && rows.length > 0){
             return rows.some((row: DataRow)=>{ // if a cell contains a geosparql value
                 // Test all rows because of OPTIONAL in SPARQL
-                return this.testForGeosparqlValue(row)
+                if(this.getGeosparqlValue(row)) return true
             })
         }
         return false
     }
 
     // this method checks if there is a geosparql value in a cell for a given row
-    private testForGeosparqlValue(row:DataRow): boolean {
+    private getGeosparqlValue(row:DataRow): Parser.BindingValue[] | null {
         let res = row.filter((cell)=>{
             if(this.isBindingValue(cell)){
-               if(cell?.datatype === "http://www.opengis.net/ont/geosparql#wktLiteral") return cell
+               if(cell?.datatype === "http://www.opengis.net/ont/geosparql#wktLiteral") return true
                // add here further type such as 'http://www.opengis.net/ont/gml'
             }
             return false
-        })
+        });
         //found geo value?
-        return res.length > 0
+        if(res.length > 0 ) return (res as Parser.BindingValue[])
+        return null
     }
 
     draw(persistentConfig: any, runtimeConfig?: any): void | Promise<void> {
-
-        if(this.getRows() === this.resultSet) return // nothing changed. nothing to do
-
-        //if the resultset changed cleanup and rerender
+        const rows = this.getRows()
+        if(rows === this.resultSet) return // nothing changed. nothing to do
+        //if the resultset changed, then cleanup and rerender
         this.cleanUp()
+        this.createMap()
+        
+        rows.map((row:DataRow)=>{   
+            this.parseGeoLiteral(row,this.config.parsingFunction)
+        })
 
+    }
+
+    private createMap(){
+        this.mapEL = document.createElement('div')
+        this.mapEL.setAttribute('id','map')
+        const parentEl = document.getElementById('resultsId1')
+        if(!parentEl) throw Error(`Couldn't find parent element of Yasr. No element found with Id: resultsId1`)
+        parentEl.appendChild(this.mapEL)
+        this.map = L.map('map').setView(this.config.setView.center,this.config.setView.zoom,this.config.setView.options)
+        L.tileLayer(this.config.tileLayer.urlTemplate,this.config.tileLayer.options).addTo(this.map)
     }
     
     getIcon(): Element {
@@ -99,8 +116,12 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
     helpReference?: string | undefined;
 
-    private parseGeoLiteral(cb:(literalValue:string)=>Polygon | Point){
-
+    private parseGeoLiteral(row:DataRow, cb:(row:DataRow, literal:string)=>Polyline | Marker){
+        const literals = this.getGeosparqlValue(row)
+        if(!literals) return
+        const features = literals.map((bindings)=>{
+            cb(row,bindings.value) // let callback do the parsing
+        })
     }
 
     private getRows(): DataRow[] {

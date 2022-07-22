@@ -25,6 +25,7 @@
     "Sparnatural": "file:../Sparnatural",
     "typescript": "^4.6.3",
     "web-vitals": "^0.2.4",
+    "wicket": "^1.3.8",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
     "workbox-cacheable-response": "^5.1.4",

@@ -8,11 +8,13 @@ import Yasr from "@triply/yasr"
 import * as CustomTable from "./plugins/custom-table/CustomTable";
 import RoutingModal from "./modal/RoutingModal";
 import React from "react";
+import * as MapPlugin from "./plugins/map-plugin/MapPlugin";
 
 // custom-table: Table plugin which reroutes clicks on IRIs to react routes
 // map-plugin: Plugin which shows the result of geosparql in a map.
 const registerYasrPlugins = () => {
  Yasgui.Yasr.registerPlugin('custom-table',CustomTable.default as any)
+ Yasgui.Yasr.registerPlugin('custom-map',MapPlugin.default as any)
 }
 
 
@@ -49,6 +51,7 @@ const Yasg = ({onTabChange}:{onTabChange:(changetab:Tab)=>void}) => {
         initTab.getYasr().config.pluginOrder = [
           "table",
           "response",
+          "custom-map",
           "boolean",
           "error"
       ]
