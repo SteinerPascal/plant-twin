@@ -2,9 +2,20 @@ import {Plugin} from "@triply/yasr/build/ts/src/plugins/index"
 import Parser from "@triply/yasr/build/ts/src/parsers"
 import { drawSvgStringAsElement } from "../utils";
 import Yasr from "@triply/yasr/build/ts/src/index"
-import L, { Polyline, Marker } from "leaflet";
-import { wktParsing } from "./wktParsing";
-
+import * as L from "leaflet";
+import { Geometry, Point, Polygon } from "geojson";
+import { wktToGeoJson } from "./wktParsing";
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+// Bug in rendering markers.
+// see: https://github.com/PaulLeCam/react-leaflet/issues/453
+import customIcon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+const markerIcon = L.icon( {
+    iconUrl: customIcon,
+    shadowUrl: iconShadow
+} );
 
 /*
     Currently this plugin supports only the wktLiteral parsing.
@@ -12,6 +23,13 @@ import { wktParsing } from "./wktParsing";
 */
 
 export interface PluginConfig {
+    clusterMarkers:boolean,
+    polygonDefaultColor: string,
+    polygonColors: Array<string>,
+    mapSize: {
+        width:string,
+        height:string
+    }
     setView: {
         center: L.LatLngExpression,
         zoom?: number,
@@ -21,12 +39,10 @@ export interface PluginConfig {
         urlTemplate: string, 
         options?: L.TileLayerOptions
     }
-    parsingFunction: (row:DataRow, literalValue:string)=> Polyline | Marker
+    parsingFunction: (literalValue:string)=> Geometry
 }
 
 type DataRow = [number, ...(Parser.BindingValue | "")[]];
-
-
 
 
 export default class MapPlugin implements Plugin<PluginConfig>{
@@ -36,14 +52,29 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     private map:L.Map | null = null
     private resultSet: DataRow[] | null = null
     private config: PluginConfig;
+    private markerCluster:L.MarkerClusterGroup;
     hideFromSelection?: boolean = false;
     label?: string = 'Map';
     options?: PluginConfig;
     // define the default config for leaflet
     public static defaults: PluginConfig = {
+        clusterMarkers: true,
+        polygonDefaultColor: 'blue',
+        polygonColors: [
+            'green',
+            'purple',
+            'orange',
+            'yellow',
+            'red',
+            'blue',
+        ],
+        mapSize: {
+            width:'auto',
+            height:'350px',
+        },
         setView: {
             center:[46.20222, 6.14569], // Geneva, Switzerland
-            zoom: 13,
+            zoom: 11,
             options: undefined
         },
         tileLayer: {
@@ -53,13 +84,14 @@ export default class MapPlugin implements Plugin<PluginConfig>{
                 attribution: "© OpenStreetMap"
             }
         },
-        parsingFunction: wktParsing
+        parsingFunction: wktToGeoJson
         
     }
 
     constructor(yasr:Yasr){
         this.yasr = yasr;
         this.config = MapPlugin.defaults
+        this.markerCluster = L.markerClusterGroup()
     }
     // Map plugin can handle results in the form of geosparql wktLiterals
     // http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf#wktLiteral
@@ -83,7 +115,6 @@ export default class MapPlugin implements Plugin<PluginConfig>{
             }
             return false
         });
-        //found geo value?
         if(res.length > 0 ) return (res as Parser.BindingValue[])
         return null
     }
@@ -94,16 +125,64 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         //if the resultset changed, then cleanup and rerender
         this.cleanUp()
         this.createMap()
-        
-        rows.map((row:DataRow)=>{   
-            this.parseGeoLiteral(row,this.config.parsingFunction)
-        })
 
+        
+        const drawables = rows.flatMap((row:DataRow)=>{   
+            const features = this.parseGeoLiteral(row,this.config.parsingFunction)
+            // features are in this case either GeoJson Point or Polygons
+            if(features.length === 0) return
+            return features.map(f=>{
+                let popUpString = this.createPopUpString(row)
+                if(f.type === "Point") this.drawMarker(f,popUpString)
+                if(f.type === "Polygon") this.drawPoly(f,popUpString)
+            })
+        })
+        // If the markers should be clustered then draw the cluster
+        if(!this.map) throw Error(`Couldn't find map element`)
+        console.dir(this.config.clusterMarkers)
+        console.dir(this.markerCluster)
+        if(this.config.clusterMarkers) this.map.addLayer(this.markerCluster)
+    }
+
+    private drawMarker(feature: Point, popUpString:string) {
+        const latLng = new L.LatLng(feature.coordinates[0],feature.coordinates[1])
+        if(!this.map) throw Error(`Wanted to draw Marker but no map found`)
+        const marker = new L.Marker(latLng, {icon: markerIcon}).bindPopup(popUpString)
+        this.config.clusterMarkers ? this.markerCluster.addLayer(marker) : marker.addTo(this.map)
+    }
+
+    private drawPoly(feature: Polygon, popUpString:string) {
+        if(!this.map) throw Error(`Wanted to draw Polygon but no map found`)
+        let colors = this.config.polygonColors.pop()
+        if(!colors) colors = this.config.polygonDefaultColor
+        new L.Polygon(feature.coordinates as L.LatLngExpression[][], {color: colors}).bindPopup(popUpString).addTo(this.map)
+    }
+
+    private createPopUpString(row:DataRow):string {
+        let popUp:{[key: string]: any;} = {}
+        let columns = this.getVariables()
+        row.forEach((cell,i)=>{
+            if(i === 0) popUp['rowNr'] = cell as number
+            if(this.isBindingValue(cell)){
+                if(!columns) return
+                if(cell.type === 'uri') popUp[columns[i]] = cell.value
+            }
+        })
+        let contentString = ``
+        for (const [k, v] of Object.entries(popUp)) {
+            contentString = `${contentString} <br> ${k}: <a class='iri' style="cursor: pointer; color:blue;">${v}</a>`
+        }
+        return contentString
     }
 
     private createMap(){
+        // Create the map HTMLElement
         this.mapEL = document.createElement('div')
         this.mapEL.setAttribute('id','map')
+        this.mapEL.style.height = this.config.mapSize.height
+        this.mapEL.style.width = this.config.mapSize.width
+
+        // Append map to YASR result HTMLElement and init
         const parentEl = document.getElementById('resultsId1')
         if(!parentEl) throw Error(`Couldn't find parent element of Yasr. No element found with Id: resultsId1`)
         parentEl.appendChild(this.mapEL)
@@ -116,11 +195,11 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
     helpReference?: string | undefined;
 
-    private parseGeoLiteral(row:DataRow, cb:(row:DataRow, literal:string)=>Polyline | Marker){
+    private parseGeoLiteral(row:DataRow, cb:( literal:string)=>Geometry):Array<Geometry>{
         const literals = this.getGeosparqlValue(row)
-        if(!literals) return
-        const features = literals.map((bindings)=>{
-            cb(row,bindings.value) // let callback do the parsing
+        if(!literals) return []
+        return literals.map((bindings)=>{
+            return cb(bindings.value) // let callback do the parsing
         })
     }
 
@@ -132,7 +211,11 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         const vars = this.yasr.results.getVariables();
         // Use "" as the empty value, undefined will throw runtime errors
         return bindings.map((binding, rowId) => [rowId + 1, ...vars.map((variable) => binding[variable] ?? "")]);
-      }
+    }
+
+    private getVariables(){
+        return this.yasr.results?.getVariables()
+    }
     
     // remove the already rendered map so we can rerender it
     private cleanUp() {

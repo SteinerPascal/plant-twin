@@ -10,6 +10,8 @@ import RoutingModal from "./modal/RoutingModal";
 import React from "react";
 import * as MapPlugin from "./plugins/map-plugin/MapPlugin";
 
+
+
 // custom-table: Table plugin which reroutes clicks on IRIs to react routes
 // map-plugin: Plugin which shows the result of geosparql in a map.
 const registerYasrPlugins = () => {
