@@ -185,8 +185,6 @@ export default class CustomTable implements Plugin<PluginConfig> {
     const rows = this.getRows();
 
     const columns = this.getColumns();
-    console.warn('columns')
-    console.dir(columns)
     if (rows.length <= (persistentConfig?.pageSize || DEFAULT_PAGE_SIZE)) {
       addClass(this.yasr.rootEl, "isSinglePage");
     } else {

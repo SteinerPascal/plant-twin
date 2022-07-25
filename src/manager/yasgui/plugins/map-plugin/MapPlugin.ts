@@ -12,6 +12,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 // see: https://github.com/PaulLeCam/react-leaflet/issues/453
 import customIcon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { kMaxLength } from "buffer";
 const markerIcon = L.icon( {
     iconUrl: customIcon,
     shadowUrl: iconShadow
@@ -23,7 +24,13 @@ const markerIcon = L.icon( {
 */
 
 export interface PluginConfig {
-    clusterMarkers:boolean,
+    baseLayers: Array<{
+        urlTemplate: string, 
+        options?: L.TileLayerOptions
+    }>
+    polylineOptions: L.PolylineOptions | null,
+    markerOptions: L.MarkerOptions | null,
+    geoDataType: Array<string>,
     polygonDefaultColor: string,
     polygonColors: Array<string>,
     mapSize: {
@@ -35,11 +42,14 @@ export interface PluginConfig {
         zoom?: number,
         options?: L.ZoomPanOptions
     }
-    tileLayer: {
-        urlTemplate: string, 
-        options?: L.TileLayerOptions
-    }
     parsingFunction: (literalValue:string)=> Geometry
+}
+
+// represents a yasr result cell with a geo literal
+interface GeoCell {
+    cellValue: Parser.BindingValue, // literal value of the cell
+    colIndex:number, // column index of the cell
+    parsedLit?: Geometry
 }
 
 type DataRow = [number, ...(Parser.BindingValue | "")[]];
@@ -50,15 +60,24 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     private yasr:Yasr
     private mapEL:HTMLElement | null = null;
     private map:L.Map | null = null
-    private resultSet: DataRow[] | null = null
     private config: PluginConfig;
     private markerCluster:L.MarkerClusterGroup;
+    private layerGroups:{[key:string]:L.LayerGroup} = {}
+    private controlLayers: L.Control.Layers | null = null
     hideFromSelection?: boolean = false;
     label?: string = 'Map';
     options?: PluginConfig;
     // define the default config for leaflet
     public static defaults: PluginConfig = {
-        clusterMarkers: true,
+        baseLayers: [{
+            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            options: {
+                maxZoom: 19,
+                attribution: "© OpenStreetMap"
+            }}],
+        geoDataType: ['http://www.opengis.net/ont/geosparql#wktLiteral'], // add here further type such as 'http://www.opengis.net/ont/gml'
+        polylineOptions: null,
+        markerOptions: null,
         polygonDefaultColor: 'blue',
         polygonColors: [
             'green',
@@ -77,21 +96,18 @@ export default class MapPlugin implements Plugin<PluginConfig>{
             zoom: 11,
             options: undefined
         },
-        tileLayer: {
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            options: {
-                maxZoom: 19,
-                attribution: "© OpenStreetMap"
-            }
-        },
         parsingFunction: wktToGeoJson
         
     }
 
     constructor(yasr:Yasr){
         this.yasr = yasr;
+        // merge options when set by client
+        if(MapPlugin.defaults.markerOptions) L.Marker.mergeOptions(MapPlugin.defaults.markerOptions)
+        if(MapPlugin.defaults.polylineOptions) L.Marker.mergeOptions(MapPlugin.defaults.polylineOptions)
         this.config = MapPlugin.defaults
         this.markerCluster = L.markerClusterGroup()
+        this.controlLayers = L.control.layers()
     }
     // Map plugin can handle results in the form of geosparql wktLiterals
     // http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf#wktLiteral
@@ -107,55 +123,88 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
 
     // this method checks if there is a geosparql value in a cell for a given row
-    private getGeosparqlValue(row:DataRow): Parser.BindingValue[] | null {
-        let res = row.filter((cell)=>{
+    private getGeosparqlValue(row:DataRow): GeoCell[] | null {
+        let geoLiterals:Array<GeoCell> = []
+        row.forEach((cell,index)=>{
             if(this.isBindingValue(cell)){
-               if(cell?.datatype === "http://www.opengis.net/ont/geosparql#wktLiteral") return true
-               // add here further type such as 'http://www.opengis.net/ont/gml'
+               if(this.config.geoDataType.includes(cell.datatype as string)){
+                // cell contains a geoliteral
+                geoLiterals.push({cellValue:cell,colIndex:index-1})
+               }
             }
             return false
         });
-        if(res.length > 0 ) return (res as Parser.BindingValue[])
+        if(geoLiterals.length > 0 ) return geoLiterals
         return null
     }
 
     draw(persistentConfig: any, runtimeConfig?: any): void | Promise<void> {
+        console.log('draw called')
         const rows = this.getRows()
-        if(rows === this.resultSet) return // nothing changed. nothing to do
+
+        console.log('after return')
         //if the resultset changed, then cleanup and rerender
         this.cleanUp()
         this.createMap()
 
         
-        const drawables = rows.flatMap((row:DataRow)=>{   
-            const features = this.parseGeoLiteral(row,this.config.parsingFunction)
+        const drawables = rows.flatMap((row:DataRow)=>{ 
+            const geoCells =  this.parseGeoLiteral(row,this.config.parsingFunction)
             // features are in this case either GeoJson Point or Polygons
-            if(features.length === 0) return
-            return features.map(f=>{
+            if(geoCells.length === 0) return
+            return geoCells.map(c=>{
                 let popUpString = this.createPopUpString(row)
-                if(f.type === "Point") this.drawMarker(f,popUpString)
-                if(f.type === "Polygon") this.drawPoly(f,popUpString)
+                if(c.parsedLit?.type === "Point") this.drawMarker(c.parsedLit,c.colIndex,popUpString)
+                if(c.parsedLit?.type === "Polygon") this.drawPoly(c.parsedLit,c.colIndex,popUpString)
             })
         })
-        // If the markers should be clustered then draw the cluster
+        // If the markers are clustered then draw the cluster now
         if(!this.map) throw Error(`Couldn't find map element`)
-        console.dir(this.config.clusterMarkers)
+        // add all the layers created in addControlLayer
+        for (const [k,v] of Object.entries(this.layerGroups)) {
+            this.controlLayers?.addOverlay(v,k)
+        }
+        
+        this.controlLayers?.addTo(this.map)
+        // add cluster of markers
         console.dir(this.markerCluster)
-        if(this.config.clusterMarkers) this.map.addLayer(this.markerCluster)
+        this.markerCluster.addTo(this.map)
+
     }
 
-    private drawMarker(feature: Point, popUpString:string) {
+    private drawMarker(feature: Point,colIndex:number, popUpString:string) {
         const latLng = new L.LatLng(feature.coordinates[0],feature.coordinates[1])
         if(!this.map) throw Error(`Wanted to draw Marker but no map found`)
-        const marker = new L.Marker(latLng, {icon: markerIcon}).bindPopup(popUpString)
-        this.config.clusterMarkers ? this.markerCluster.addLayer(marker) : marker.addTo(this.map)
+        let markerOptions:any ={
+            icon:markerIcon
+        }
+        if(this.config.markerOptions) markerOptions = this.config.markerOptions
+        const marker = new L.Marker(latLng, markerOptions).bindPopup(popUpString)
+        //if clustering is activated, then don't draw the marker but gather it in the cluster
+        this.markerCluster.addLayer(marker)
     }
 
-    private drawPoly(feature: Polygon, popUpString:string) {
+    private drawPoly(feature: Polygon,colIndex:number, popUpString:string) {
         if(!this.map) throw Error(`Wanted to draw Polygon but no map found`)
-        let colors = this.config.polygonColors.pop()
-        if(!colors) colors = this.config.polygonDefaultColor
-        new L.Polygon(feature.coordinates as L.LatLngExpression[][], {color: colors}).bindPopup(popUpString).addTo(this.map)
+        // configuration of Polygon
+        let polyOptions:any = {}
+        if(this.config.polylineOptions) polyOptions = this.config.polylineOptions
+        if(this.config.polygonColors.length-1 >=colIndex ){
+            polyOptions['color'] = this.config.polygonColors[colIndex] 
+        } else {
+            polyOptions['color'] = this.config.polygonDefaultColor
+        }
+        // add controll layers for columns
+        const poly = new L.Polygon(feature.coordinates as L.LatLngExpression[][], polyOptions).bindPopup(popUpString)
+        this.addToControlLayer(colIndex,poly)
+    }
+    // Add the drawable to a control layer
+    private addToControlLayer(colIndex:number,feature:L.Polygon | L.Marker){
+        const cols = this.getVariables()
+        if(cols){
+            let vName = cols[colIndex]
+            this.layerGroups[vName] ? this.layerGroups[vName].addLayer(feature) : this.layerGroups[vName] = L.layerGroup([feature])
+        }
     }
 
     private createPopUpString(row:DataRow):string {
@@ -187,7 +236,15 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         if(!parentEl) throw Error(`Couldn't find parent element of Yasr. No element found with Id: resultsId1`)
         parentEl.appendChild(this.mapEL)
         this.map = L.map('map').setView(this.config.setView.center,this.config.setView.zoom,this.config.setView.options)
-        L.tileLayer(this.config.tileLayer.urlTemplate,this.config.tileLayer.options).addTo(this.map)
+        this.map.options.maxZoom = 19 // see: https://github.com/Leaflet/Leaflet.markercluster/issues/611
+        // For each provided baseLayer create a tileLayer and add it to control
+        this.config.baseLayers.map((l,index)=>{
+            let name = 'No attribution name provided'
+            if(l.options?.attribution) name = l.options.attribution 
+            const layer = L.tileLayer(l.urlTemplate,l.options)
+            if(index === 0 && this.map) layer.addTo(this.map) // set first base layer as active
+            this.controlLayers?.addBaseLayer(layer,name) 
+        })
     }
     
     getIcon(): Element {
@@ -195,11 +252,13 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
     helpReference?: string | undefined;
 
-    private parseGeoLiteral(row:DataRow, cb:( literal:string)=>Geometry):Array<Geometry>{
+    // cb: parsing function which takes a string and translates it to a geoJSON geometry
+    private parseGeoLiteral(row:DataRow, cb:( literal:string)=>Geometry):Array<GeoCell>{
         const literals = this.getGeosparqlValue(row)
         if(!literals) return []
-        return literals.map((bindings)=>{
-            return cb(bindings.value) // let callback do the parsing
+        return literals.map((lit:GeoCell)=>{
+            lit.parsedLit = cb(lit.cellValue.value) // let callback do the parsing
+            return lit
         })
     }
 
@@ -220,6 +279,9 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     // remove the already rendered map so we can rerender it
     private cleanUp() {
         this.mapEL?.remove()
+        this.layerGroups = {}
+        this.markerCluster = L.markerClusterGroup()
+        this.controlLayers = L.control.layers()
     }
 
     // see: https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
