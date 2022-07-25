@@ -64,6 +64,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     private markerCluster:L.MarkerClusterGroup;
     private layerGroups:{[key:string]:L.LayerGroup} = {}
     private controlLayers: L.Control.Layers | null = null
+    private colorsUsed:Array<number> = [] // used to color the polygons
     hideFromSelection?: boolean = false;
     label?: string = 'Map';
     options?: PluginConfig;
@@ -80,12 +81,12 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         markerOptions: null,
         polygonDefaultColor: 'blue',
         polygonColors: [
+            'yellow',
+            'blue',
+            'orange',
             'green',
             'purple',
-            'orange',
-            'yellow',
             'red',
-            'blue',
         ],
         mapSize: {
             width:'auto',
@@ -139,10 +140,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
 
     draw(persistentConfig: any, runtimeConfig?: any): void | Promise<void> {
-        console.log('draw called')
         const rows = this.getRows()
-
-        console.log('after return')
         //if the resultset changed, then cleanup and rerender
         this.cleanUp()
         this.createMap()
@@ -167,7 +165,6 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         
         this.controlLayers?.addTo(this.map)
         // add cluster of markers
-        console.dir(this.markerCluster)
         this.markerCluster.addTo(this.map)
 
     }
@@ -186,14 +183,17 @@ export default class MapPlugin implements Plugin<PluginConfig>{
 
     private drawPoly(feature: Polygon,colIndex:number, popUpString:string) {
         if(!this.map) throw Error(`Wanted to draw Polygon but no map found`)
-        // configuration of Polygon
+        // configuration of Polygon see: https://leafletjs.com/reference.html#polygon
         let polyOptions:any = {}
         if(this.config.polylineOptions) polyOptions = this.config.polylineOptions
-        if(this.config.polygonColors.length-1 >=colIndex ){
-            polyOptions['color'] = this.config.polygonColors[colIndex] 
-        } else {
-            polyOptions['color'] = this.config.polygonDefaultColor
+        if(this.colorsUsed.includes(colIndex)){
+            polyOptions['color'] = this.config.polygonColors[this.colorsUsed.indexOf(colIndex)]
+        }else{
+            this.colorsUsed.push(colIndex)
+            polyOptions['color'] = this.config.polygonColors[this.colorsUsed.indexOf(colIndex)]
         }
+        polyOptions['fill'] = false // no color filled in polygon
+        polyOptions['opacity'] = 0.2 // stroke opacity
         // add controll layers for columns
         const poly = new L.Polygon(feature.coordinates as L.LatLngExpression[][], polyOptions).bindPopup(popUpString)
         this.addToControlLayer(colIndex,poly)
@@ -282,6 +282,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         this.layerGroups = {}
         this.markerCluster = L.markerClusterGroup()
         this.controlLayers = L.control.layers()
+        this.colorsUsed = []
     }
 
     // see: https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
