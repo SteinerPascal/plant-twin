@@ -1,0 +1,28 @@
+.cyclegraph {
+    position: relative;
+    width: 700px;
+    height: 700px;
+    margin: 10%;
+  }
+  
+  .cyclegraph:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 2px solid teal;
+    width: calc(100% - 2px * 2);
+    height: calc(100% - 2px * 2);
+    border-radius: 50%;
+  }
+  
+  .cyclegraph .circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin: calc(-100px / 2);
+    background: teal;
+    border-radius: 50%;
+  }

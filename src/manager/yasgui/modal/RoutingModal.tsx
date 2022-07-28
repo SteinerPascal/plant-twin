@@ -43,7 +43,7 @@ export default function BasicModal({open,handleClose,iri}:{open:boolean,handleCl
           <br />
           <div>
             <Button variant="contained">Open in Web</Button>
-            <Button component={Link} to={'/twin'} variant="contained" sx={btnStyle}>Open in Application</Button>
+            <Button component={Link} to={'/twin'} state={{ subject: iri }} variant="contained" sx={btnStyle}>Open in Application</Button>
           </div>
         </Box>
       </Modal>

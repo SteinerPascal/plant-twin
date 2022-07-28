@@ -16,6 +16,20 @@ Refactors done:
 Sparnatural integration:
 - declaration file for jsx element src/declaration.d.ts
 
+## Yasgui
+The react parent should listen on the 'YasrClickEvent' to catch clicks on IRIs
+```
+  // registers click listener on YASR 
+  // CustomTable component emits YasrIriClick even on clicks on IRI's
+  const registerURICliclListener = (yasr:Yasr) => {
+    yasr.rootEl.addEventListener('YasrIriClick',(evt:Event)=>{
+      let iri = (evt as CustomEvent).detail // need to cast. see: https://github.com/microsoft/TypeScript/issues/28357
+      handleOpen()
+      setIRI(iri)
+    })
+  }
+```
+
 
 ## Leaflet plugin Yasr
 Focus points:
