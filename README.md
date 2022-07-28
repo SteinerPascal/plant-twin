@@ -27,3 +27,5 @@ Focus points:
      Park_1 -> hasLocation -> wkt_1 && ProtectedArea_1 -> has Location ->wkt_1
 - You can add different tilebase layers for leaflet. For example openMap or a custom map from geneva town council.
 - Parsing of geo literals is done with the MapPlugin.parsingFunction callback. It is responsible to deliver Polygons and Points
+### Issues:
+  I need to import geoman plugin or otherwise leaflet in sparnatural crashes because map.pm attribute doesn't get initialized

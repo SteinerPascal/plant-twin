@@ -2,17 +2,23 @@ import {Plugin} from "@triply/yasr/build/ts/src/plugins/index"
 import Parser from "@triply/yasr/build/ts/src/parsers"
 import { drawSvgStringAsElement } from "../utils";
 import Yasr from "@triply/yasr/build/ts/src/index"
-import * as L from "leaflet";
+import L, { Marker } from "leaflet";
+//import * as L from "leaflet";
 import { Geometry, Point, Polygon } from "geojson";
 import { wktToGeoJson } from "./wktParsing";
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+/*
+  Importing Geoman-io here because it is used by Sparnatural. If I don't import it. then opening the map in sparnatural crashes.
+  It then doesn't init the map.pm attribute. (stays undefined) and when it tries to call map.pm.optIn it says undefined
+*/
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 // Bug in rendering markers.
 // see: https://github.com/PaulLeCam/react-leaflet/issues/453
 import customIcon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import { kMaxLength } from "buffer";
 const markerIcon = L.icon( {
     iconUrl: customIcon,
     shadowUrl: iconShadow
@@ -58,13 +64,14 @@ type DataRow = [number, ...(Parser.BindingValue | "")[]];
 export default class MapPlugin implements Plugin<PluginConfig>{
     priority: number = 5; // priority for sorting the plugins in yasr
     private yasr:Yasr
-    private mapEL:HTMLElement | null = null;
+    private mapEL:HTMLElement | null = null; //HTMLElement of the map
     private map:L.Map | null = null
     private config: PluginConfig;
     private markerCluster:L.MarkerClusterGroup;
-    private layerGroups:{[key:string]:L.LayerGroup} = {}
-    private controlLayers: L.Control.Layers | null = null
+    private layerGroups:{[key:string]:L.LayerGroup} = {} // group all polygons with sparql var name as key
+    private controlLayers: L.Control.Layers | null = null // responsible for filterable layers on the map
     private colorsUsed:Array<number> = [] // used to color the polygons
+    private layers: Array<L.Layer> = [] // contains all layers (Marker | Polygon)
     hideFromSelection?: boolean = false;
     label?: string = 'Map';
     options?: PluginConfig;
@@ -104,6 +111,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     constructor(yasr:Yasr){
         this.yasr = yasr;
         // merge options when set by client
+        
         if(MapPlugin.defaults.markerOptions) L.Marker.mergeOptions(MapPlugin.defaults.markerOptions)
         if(MapPlugin.defaults.polylineOptions) L.Marker.mergeOptions(MapPlugin.defaults.polylineOptions)
         this.config = MapPlugin.defaults
@@ -166,7 +174,12 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         this.controlLayers?.addTo(this.map)
         // add cluster of markers
         this.markerCluster.addTo(this.map)
-
+        // when a popup gets rendered then attach listener
+        this.map.on('popupopen', (e)=> {
+            const el = e.popup.getElement()
+            if(!el) return
+            this.addIriClickListener(el)
+          });
     }
 
     private drawMarker(feature: Point,colIndex:number, popUpString:string) {
@@ -177,11 +190,15 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         }
         if(this.config.markerOptions) markerOptions = this.config.markerOptions
         const marker = new L.Marker(latLng, markerOptions).bindPopup(popUpString)
+
+        this.addToLayerList(marker)
         //if clustering is activated, then don't draw the marker but gather it in the cluster
         this.markerCluster.addLayer(marker)
     }
 
     private drawPoly(feature: Polygon,colIndex:number, popUpString:string) {
+        console.log('el')
+        console.dir(popUpString)
         if(!this.map) throw Error(`Wanted to draw Polygon but no map found`)
         // configuration of Polygon see: https://leafletjs.com/reference.html#polygon
         let polyOptions:any = {}
@@ -195,11 +212,24 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         polyOptions['fill'] = false // no color filled in polygon
         polyOptions['opacity'] = 0.2 // stroke opacity
         // add controll layers for columns
-        const poly = new L.Polygon(feature.coordinates as L.LatLngExpression[][], polyOptions).bindPopup(popUpString)
-        this.addToControlLayer(colIndex,poly)
+        const poly = new L.Polygon(feature.coordinates as L.LatLngExpression[][], polyOptions).bindPopup(popUpString) 
+        this.addToLayerList(poly)
+        this.addToLayerGroup(colIndex,poly)
     }
+
+    private addIriClickListener(el: HTMLElement){
+
+        const iriElements = el.getElementsByClassName('iri')
+        for(let i = 0; i < iriElements.length; i++){
+            let el = iriElements[i] as HTMLAnchorElement
+            el.addEventListener('click',()=>{
+                el.dispatchEvent( new CustomEvent('YasrIriClick',{bubbles:true,detail:el.text}))
+            })
+        }
+    }
+
     // Add the drawable to a control layer
-    private addToControlLayer(colIndex:number,feature:L.Polygon | L.Marker){
+    private addToLayerGroup(colIndex:number,feature:L.Polygon | L.Marker){
         const cols = this.getVariables()
         if(cols){
             let vName = cols[colIndex]
@@ -227,7 +257,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     private createMap(){
         // Create the map HTMLElement
         this.mapEL = document.createElement('div')
-        this.mapEL.setAttribute('id','map')
+        this.mapEL.setAttribute('id','yasrmap')
         this.mapEL.style.height = this.config.mapSize.height
         this.mapEL.style.width = this.config.mapSize.width
 
@@ -235,7 +265,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         const parentEl = document.getElementById('resultsId1')
         if(!parentEl) throw Error(`Couldn't find parent element of Yasr. No element found with Id: resultsId1`)
         parentEl.appendChild(this.mapEL)
-        this.map = L.map('map').setView(this.config.setView.center,this.config.setView.zoom,this.config.setView.options)
+        this.map = L.map('yasrmap').setView(this.config.setView.center,this.config.setView.zoom,this.config.setView.options)
         this.map.options.maxZoom = 19 // see: https://github.com/Leaflet/Leaflet.markercluster/issues/611
         // For each provided baseLayer create a tileLayer and add it to control
         this.config.baseLayers.map((l,index)=>{
@@ -283,6 +313,10 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         this.markerCluster = L.markerClusterGroup()
         this.controlLayers = L.control.layers()
         this.colorsUsed = []
+    }
+
+    private addToLayerList(g: L.Layer){
+        this.layers.push(g)
     }
 
     // see: https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
