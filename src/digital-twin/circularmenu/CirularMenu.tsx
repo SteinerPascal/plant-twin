@@ -1,4 +1,7 @@
 import React, { useRef, useEffect } from "react";
+import CircularFAB from "./CircularFAB";
+
+
 
 import "./menu.scss";
 //https://codesandbox.io/s/circles-forked-wl8j87?file=/src/App.js
@@ -30,12 +33,24 @@ export default function CircularMenu() {
   return (
     <div className="App">
       <div className="cyclegraph" ref={graph}>
-        <div className="circle" />
-        <div className="circle" />
-        <div className="circle" />
-        <div className="circle" />
-        <div className="circle" />
-        <div className="circle" />
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
+      <div className="circle">
+        <CircularFAB ></CircularFAB>
+      </div>
       </div>
     </div>
   );

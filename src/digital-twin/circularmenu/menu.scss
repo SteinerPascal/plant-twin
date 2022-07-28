@@ -18,11 +18,12 @@
   
   .cyclegraph .circle {
     position: absolute;
+    padding:30px;
     top: 50%;
     left: 50%;
     width: 100px;
     height: 100px;
     margin: calc(-100px / 2);
-    background: teal;
+    //background: teal;
     border-radius: 50%;
   }
