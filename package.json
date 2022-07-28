@@ -25,6 +25,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.0",
     "Sparnatural": "file:../Sparnatural",
+    "styled-components": "^5.3.5",
     "typescript": "^4.6.3",
     "web-vitals": "^0.2.4",
     "wicket": "^1.3.8",
