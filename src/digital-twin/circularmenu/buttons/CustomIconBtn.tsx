@@ -4,12 +4,12 @@ import IconButton from "@mui/material/IconButton";
 export default function CustomBtn(){
 
     return(
-        <IconButton aria-label="delete" sx={{backgroundColor:'#0DBEC7', "&:hover": {
-            backgroundColor: "#0DBEC7",
+        <IconButton aria-label="delete"  sx={{backgroundColor:'#6A802E', "&:hover": {
+            backgroundColor: "#6A802E",
             cursor: "default",
             transform: "scale(1.2)"
             }}}>
-        <LightModeIcon sx={{color:"white"}} />
+        <LightModeIcon sx={{fontSize: 50,color:"white"}} />
       </IconButton> 
     )
 }

@@ -13,7 +13,7 @@ export default function CircularFAB() {
         <Planet
             centerContent={<CustomBtn />}
             hideOrbit
-            autoClose
+            autoClose={true}
             orbitRadius={60}
             bounceOnClose
             rotation={105}
