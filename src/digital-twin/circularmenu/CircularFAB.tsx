@@ -5,7 +5,7 @@ import {Planet} from "react-planet"
 import CustomBtn from "./buttons/CustomIconBtn"
 import DeleteBtn from "./buttons/DeleteBtn"
 import EditBtn from "./buttons/EditBtn"
-import ViewBtn from "./buttons/ViewBtn"
+import InformationBtn from "./buttons/InformationBtn"
 
 export default function CircularFAB() {
     
@@ -23,7 +23,7 @@ export default function CircularFAB() {
         >
             <DeleteBtn />
             <EditBtn />
-            <ViewBtn />
+            <InformationBtn />
             <div />
             <div />
             <div />

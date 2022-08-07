@@ -1,24 +1,29 @@
-import {ISparqlEndpointFetcherArgs, SparqlEndpointFetcher} from "fetch-sparql-endpoint";
+import { NamedNode, Quad, Store } from "n3";
+import {QueryEngine} from "@comunica/query-sparql"
+import { CONSTRUCT } from '@tpluscode/sparql-builder'
+
+const describeSparql = ``
 
 //https://github.com/rubensworks/fetch-sparql-endpoint.js
 export default class SparqlHandler {
-    private fetcher = new SparqlEndpointFetcher();
+    private store = new Store();
+    queryEngine = new QueryEngine()
     private endpoint;
-    private config;
-    constructor(endpoint:string , config?:ISparqlEndpointFetcherArgs){
+    constructor(endpoint:string ){
         this.endpoint = endpoint
-        this.config = config
     }
 
-    // find a way on how to reference in the ontology what should be described
-    describeThing(query:string){
+    // Find a way on how to reference in the ontology what should be described
+    async describeThing(){
 
     }
-
-    getDescriptionQuery(fetchDescrQuery:string){
-        let res = ''
-        this.fetcher.fetchTriples(this.endpoint,fetchDescrQuery)
-        return res
+    // This gets all the related infos to the twin entity
+    // It is the main source of information for all the FABs and actions
+    async describeTwin(twinIRI:NamedNode){
+        const query = CONSTRUCT.WHERE`${twinIRI} ?p ?o`.build()
+        const bindingsStream = await this.queryEngine.queryBindings(query, {
+        sources: ['https://fragments.dbpedia.org/2015/en'],
+        });
     }
 
     getEndpoint() {
