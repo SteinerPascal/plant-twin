@@ -2,11 +2,9 @@ import { NamedNode, Quad, Store } from "n3";
 import {QueryEngine} from "@comunica/query-sparql"
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 
-const describeSparql = ``
-
 //https://github.com/rubensworks/fetch-sparql-endpoint.js
 export default class SparqlHandler {
-    private store = new Store();
+
     queryEngine = new QueryEngine()
     private endpoint;
     constructor(endpoint:string ){
@@ -24,6 +22,7 @@ export default class SparqlHandler {
         const bindingsStream = await this.queryEngine.queryBindings(query, {
         sources: ['https://fragments.dbpedia.org/2015/en'],
         });
+        return bindingsStream
     }
 
     getEndpoint() {

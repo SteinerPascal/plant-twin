@@ -1,4 +1,6 @@
+import { Store } from "n3";
 import React, { useRef, useEffect } from "react";
+import FabManager from "../../fab-manager/FabLoader";
 import CircularFAB from "./CircularFAB";
 
 
@@ -6,11 +8,9 @@ import CircularFAB from "./CircularFAB";
 import "./menu.scss";
 //https://codesandbox.io/s/circles-forked-wl8j87?file=/src/App.js
 
-export default function CircularMenu() {
+const CircularMenu = ({twinStore,fabs}:{twinStore:Store,fabs:Array<typeof CircularFAB>})=> {
   const graph = useRef<HTMLDivElement>(null);
-  const insertChildren = ()=>{
 
-  }
 
   const styleChildren = (cyclegraph:HTMLDivElement,circleElements:HTMLCollection)=>{
     let angle = 360 - 90;
@@ -55,3 +55,4 @@ export default function CircularMenu() {
     </div>
   );
 }
+export default CircularMenu

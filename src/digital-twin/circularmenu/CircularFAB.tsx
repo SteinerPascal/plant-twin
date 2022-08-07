@@ -2,12 +2,13 @@
 //https://morioh.com/p/a2d037c571d7
 
 import {Planet} from "react-planet"
-import CustomBtn from "./buttons/CustomIconBtn"
+import CustomBtn from "./buttons/CustomBtn"
 import DeleteBtn from "./buttons/DeleteBtn"
 import EditBtn from "./buttons/EditBtn"
 import InformationBtn from "./buttons/InformationBtn"
 
-export default function CircularFAB() {
+export default function CircularFAB()  {
+    
     
     return(
         <Planet
