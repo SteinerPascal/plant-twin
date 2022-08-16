@@ -3,12 +3,11 @@ import {
   ProSidebar,
   Menu,
   MenuItem,
-  SubMenu,
   SidebarHeader,
   SidebarFooter,
   SidebarContent,
 } from 'react-pro-sidebar';
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from 'react-icons/fa';
+import { FaGem, FaGithub,  } from 'react-icons/fa';
 
 const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boolean,rtl:boolean,toggled:boolean,handleToggleSidebar:(value: boolean) => void;}) => {
   return (

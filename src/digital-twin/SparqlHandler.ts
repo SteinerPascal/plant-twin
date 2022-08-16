@@ -1,14 +1,16 @@
-import { NamedNode, Quad, Store } from "n3";
-import {QueryEngine} from "@comunica/query-sparql"
+import { NamedNode } from "n3";
+import SparqlClient from "sparql-http-client"
 import { CONSTRUCT } from '@tpluscode/sparql-builder'
 
+
+//import QueryEngineBase from "@comunica/query-sparql-rdfjs";
 //https://github.com/rubensworks/fetch-sparql-endpoint.js
 export default class SparqlHandler {
-
-    queryEngine = new QueryEngine()
-    private endpoint;
-    constructor(endpoint:string ){
-        this.endpoint = endpoint
+    private endpointUrl
+    private client
+    constructor(endpointUrl:string ){
+        this.endpointUrl = endpointUrl
+        this.client = new SparqlClient( {endpointUrl} )
     }
 
     // Find a way on how to reference in the ontology what should be described
@@ -17,19 +19,28 @@ export default class SparqlHandler {
     }
     // This gets all the related infos to the twin entity
     // It is the main source of information for all the FABs and actions
-    async describeTwin(twinIRI:NamedNode){
+    describeTwin(twinIRI:NamedNode){
         const query = CONSTRUCT.WHERE`${twinIRI} ?p ?o`.build()
-        const bindingsStream = await this.queryEngine.queryBindings(query, {
-        sources: ['https://fragments.dbpedia.org/2015/en'],
-        });
+        const bindingsStream = this.client.query.construct(query)
+        return bindingsStream
+    }
+
+
+    async queryConstruct(query:string){
+        const bindingsStream = await this.client.query.construct(query)
+        return bindingsStream
+    }
+
+    async querySelect(query:string) {
+        const bindingsStream = await this.client.query.select(query)
         return bindingsStream
     }
 
     getEndpoint() {
-        return this.endpoint
+        return this.endpointUrl
     }
     
-    setEndpoint(endpoint:string) {
-        this.endpoint = endpoint
+    setEndpoint(endpointUrl:string) {
+        this.endpointUrl = endpointUrl
     }
 }

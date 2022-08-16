@@ -89,15 +89,15 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         polygonDefaultColor: 'blue',
         polygonColors: [
             'yellow',
-            'blue',
-            'orange',
             'green',
+            'orange',
+            'blue',
             'purple',
             'red',
         ],
         mapSize: {
             width:'auto',
-            height:'350px',
+            height:'550px',
         },
         setView: {
             center:[46.20222, 6.14569], // Geneva, Switzerland
@@ -210,7 +210,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
             polyOptions['color'] = this.config.polygonColors[this.colorsUsed.indexOf(colIndex)]
         }
         polyOptions['fill'] = false // no color filled in polygon
-        polyOptions['opacity'] = 0.2 // stroke opacity
+        polyOptions['opacity'] = 0.4 // stroke opacity
         // add controll layers for columns
         const poly = new L.Polygon(feature.coordinates as L.LatLngExpression[][], polyOptions).bindPopup(popUpString) 
         this.addToLayerList(poly)

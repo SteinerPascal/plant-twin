@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import './App.scss';
 import Twin from "./digital-twin/Twin";
-import Manager from './manager/Manager'
+import Manager from "./sparnaturalmanager/Manager";
+
 
 function App() {
   return (

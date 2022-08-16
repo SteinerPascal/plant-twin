@@ -1,7 +1,5 @@
 import { Geometry, Point } from "geojson";
-import Parser from "@triply/yasr/build/ts/src/parsers"
 var Wkt = require('wicket')
-type DataRow = [number, ...(Parser.BindingValue | "")[]];
 /*
     Callback function for the MapPlugin. 
     Uses wicket to parse WktLiterals to GeoJson and leaflet objects

@@ -43,3 +43,19 @@ Focus points:
 - Parsing of geo literals is done with the MapPlugin.parsingFunction callback. It is responsible to deliver Polygons and Points
 ### Issues:
   I need to import geoman plugin or otherwise leaflet in sparnatural crashes because map.pm attribute doesn't get initialized
+
+### Semantic Selection of FABs
+```
+  loadedFabs.filter(f=>{
+    objSet.forEach(()=>{
+      if(f.semanticQuery(endpointUrl,twinStore)){
+
+      }
+    });
+  });
+```
+The selection currently follows a very basic search where all the objects are tried to be matched against all the possible fabs. Maybe that can be replaced with a Constract where Values{objects} query? 
+
+## Plugin loading 
+it seems to work if it is not loaded from plugins
+IMPORTANT: the types between the plant twin and the plugins needs to be the same. for example @types/n3

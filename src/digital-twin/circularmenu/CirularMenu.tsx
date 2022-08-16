@@ -1,56 +1,84 @@
-import { Store } from "n3";
-import React, { useRef, useEffect } from "react";
-import FabManager from "../../fab-manager/FabLoader";
-import CircularFAB from "./CircularFAB";
+import { Quad, Store } from "n3";
+import React, { useState } from "react";
+import { useRef, useEffect,} from "react";
+import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
+import { FabHolder } from "../../fab-manager/FabHolder";
+import FabLoader, { PluginObject } from "../../fab-manager/FabLoader";
+
 
 
 
 import "./menu.scss";
 //https://codesandbox.io/s/circles-forked-wl8j87?file=/src/App.js
 
-const CircularMenu = ({twinStore,fabs}:{twinStore:Store,fabs:Array<typeof CircularFAB>})=> {
+//const Abstract = React.lazy(() => import("/home/pascal/plant-twin/src/fab-manager/AbstractFab") as Promise<{ default: ComponentType<any>; }>);
+
+const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Store})=> {
   const graph = useRef<HTMLDivElement>(null);
+  const fabholder = useRef(null);
+  const [fabElements,setFabs] = useState<null | JSX.Element[]>(null)
 
+  const styleChildren = (cyclegraph:HTMLDivElement,fabs:JSX.Element[])=>{
 
-  const styleChildren = (cyclegraph:HTMLDivElement,circleElements:HTMLCollection)=>{
     let angle = 360 - 90;
-    let dangle = 360 / circleElements.length;
+    let dangle = 360 / fabs.length;
 
-    for (let i = 0; i < circleElements.length; i++) {
-      let circle = circleElements[i] as HTMLElement;
+    const circleElements = fabs.map(el=>{
       angle += dangle;
-      circle.style.transform = `rotate(${angle}deg) translate(${cyclegraph.clientWidth /
-        1.9}px) rotate(-${angle}deg)`;
+      const style = {
+        transform:`rotate(${angle}deg) translate(${cyclegraph.clientWidth /
+        1.9}px) rotate(-${angle}deg)`
+      }
+      return <div style={style} className='circle' >{el}</div>
+    })
+    console.log(`circles? ${circleElements.length}`)
+    return circleElements
+  }
+  const fabLoader = new FabLoader()
+  useEffect(() => {
+    const fetchPlugins = async ()=>{
+      const fabs = await fabLoader.loadFromConfig()
+      // gets all the quads in the store
+      const quadSet = twinStore.getQuads(null,null,null,null)
+      console.log(`quadset ${quadSet.length}`)
+      const elements:Array<JSX.Element> = []
+      quadSet.forEach((q:Quad)=>{  
+
+        const applicables:Array<PluginObject["component"]> = []     
+        fabs.forEach(f=>{
+          console.log(`loadedFab: ${console.dir(f)}`)
+          if(f?.semanticQuery(endpointUrl,twinStore,q.object)) return applicables.push(f.component)
+        });
+        elements.push( <FabHolder key={q.object.value} endpointUrl={endpointUrl} binding={q} store={twinStore} fabs={applicables}/>)
+      });
+      setFabs(elements)
+    }
+    fetchPlugins()
+
+  }, [twinStore]);
+
+  const renderFabs = ()=>{
+    if(fabElements){
+      console.log('shouldbe loaded')
+      if(graph.current){
+        const styled = styleChildren(graph.current,fabElements)
+        console.log(`fabs ${fabElements}`)
+        console.log(styled.length)
+      return styleChildren(graph.current,fabElements)
+
+      //return fabElements.map((el)=> {return <div className='fab' >{el}</div>})
+      }
+    } else {
+      return <div>Loading Fab</div>
     }
   }
-  useEffect(() => {
-    const cyclegraph = graph.current;
-    if(!cyclegraph) throw Error('cyclegraph element not found')
-    const circleElements = cyclegraph.children;
-    styleChildren(cyclegraph,circleElements)
-  }, []);
 
   return (
     <div className="App">
       <div className="cyclegraph" ref={graph}>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
-      <div className="circle">
-        <CircularFAB ></CircularFAB>
-      </div>
+          {console.log('render fabs')}
+          {renderFabs()}
       </div>
     </div>
   );
