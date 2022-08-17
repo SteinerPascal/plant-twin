@@ -23,10 +23,23 @@ export default class FabLoader {
   async loadFromConfig (path='./plugins.json') {
     const plugins: Array<PluginObject> = []
     const entries = Object.entries(json)
-    const plug = await import("/home/pascal/plant-twin/node_modules/core-plugins/lib/esm/InformationFab")
+    const forward = await import("/home/pascal/plant-twin/build/static/js/ForwardFab")
+    const delet = await import("/home/pascal/plant-twin/build/static/js/DeleteFab")
+    const edit = await import("/home/pascal/plant-twin/build/static/js/EditFab")
+    const information = await import("/home/pascal/plant-twin/build/static/js/InformationFab")
+    
     return [{
-      semanticQuery:plug.semanticQuery,
-      component: plug.default
+      semanticQuery:delet.semanticQuery,
+      component: delet.default
+    },{
+      semanticQuery:forward.semanticQuery,
+      component: forward.default
+    },{
+      semanticQuery:edit.semanticQuery,
+      component: edit.default
+    },{
+      semanticQuery:information.semanticQuery,
+      component: information.default
     }]
     return await Promise.all(entries.map(e=>{
       const [key, value] = e;

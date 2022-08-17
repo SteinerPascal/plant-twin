@@ -58,4 +58,4 @@ The selection currently follows a very basic search where all the objects are tr
 
 ## Plugin loading 
 it seems to work if it is not loaded from plugins
-IMPORTANT: the types between the plant twin and the plugins needs to be the same. for example @types/n3
+IMPORTANT: the types between the plant twin and the plugins needs to be the same. for example @types/n3 AND also the same version of REACT
