@@ -59,3 +59,4 @@ The selection currently follows a very basic search where all the objects are tr
 ## Plugin loading 
 it seems to work if it is not loaded from plugins
 IMPORTANT: the types between the plant twin and the plugins needs to be the same. for example @types/n3 AND also the same version of REACT
+react only as peer dependency see: https://stackoverflow.com/questions/56663785/invalid-hook-call-hooks-can-only-be-called-inside-of-the-body-of-a-function-com

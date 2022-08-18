@@ -17,6 +17,7 @@
     "@types/rdf-data-model": "^1.0.3",
     "core-plugins": "file:../core-plugins",
     "datatables.net": "^1.12.1",
+    "forwardfab": "file:../forwardfab",
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
     "n3": "^1.16.2",

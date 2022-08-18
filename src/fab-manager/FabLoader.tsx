@@ -1,4 +1,5 @@
 import { Quad_Object, Store } from "n3"
+import { lazy } from "react"
 import json from './plugins.json'
 /*
 interface IFabProps {
@@ -21,11 +22,14 @@ export default class FabLoader {
   async loadFromConfig (path='./plugins.json') {
     const plugins: Array<PluginObject> = []
     const entries = Object.entries(json)
-    const forward = await import("/home/pascal/plant-twin/build/static/js/ForwardFab")
+    const a = `core-plugins`;
+   // const forward = lazy(() => { return import(`${a}`) }) as unknown as {semanticQuery: (endpoint:string,store:Store,object:Quad_Object)=>boolean, default:( endpointUrl:string, store:Store, object:Quad_Object) => JSX.Element };
+    const forward = await import('/home/pascal/plant-twin/node_modules/forwardfab/lib/esm/index')
     const delet = await import("/home/pascal/plant-twin/build/static/js/DeleteFab")
     const edit = await import("/home/pascal/plant-twin/build/static/js/EditFab")
     const information = await import("/home/pascal/plant-twin/build/static/js/InformationFab")
-    
+    console.warn('forward plugin')
+    console.log(`plug: ${console.dir(forward)}`)
     return [{
       semanticQuery:delet.semanticQuery,
       component: delet.default
@@ -52,7 +56,7 @@ export default class FabLoader {
   private async load (path:string) {
     let plugin
     try {
-      const plugin = await import("/home/pascal/plant-twin/node_modules/core-plugins/lib/esm/DeleteFab")
+      const plugin = await import("/home/pascal/plant-twin/node_modules/forwardfab/lib/esm/index")
       //const plugin = await import("/home/pascal/plant-twin/build/static/js/InformationFab")
       //const plugin = await import(path)
 
