@@ -57,14 +57,11 @@ export default class FabLoader {
       const plugin = await import("/home/pascal/plant-twin/node_modules/core-plugins/lib/esm/DeleteFab")
       //const plugin = await import("/home/pascal/plant-twin/build/static/js/InformationFab")
       //const plugin = await import(path)
-      console.log(`pluginconsole log`)
-      console.dir(plugin.semanticQuery)
-      console.dir(plugin.default)
+
       let obj = {
         semanticQuery: plugin.semanticQuery,
         component: plugin.default,
       }
-      console.log(`Loaded plugin: '${console.log(JSON.stringify(obj))}'`);
       return obj
       // make type check for Abstract Plugin here
       /*

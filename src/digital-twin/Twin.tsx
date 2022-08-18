@@ -1,5 +1,5 @@
 import { DataFactory, Quad, Store } from "n3";
-import React, { Suspense, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Layout from '../layout/Layout'

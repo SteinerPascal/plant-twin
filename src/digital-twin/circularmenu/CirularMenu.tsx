@@ -1,8 +1,6 @@
 import { Quad, Store } from "n3";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRef, useEffect,} from "react";
-import ReactDOM from "react-dom";
-import { createRoot } from "react-dom/client";
 import { FabHolder } from "../../fab-manager/FabHolder";
 import FabLoader, { PluginObject } from "../../fab-manager/FabLoader";
 
@@ -16,7 +14,6 @@ import "./menu.scss";
 
 const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Store})=> {
   const graph = useRef<HTMLDivElement>(null);
-  const fabholder = useRef(null);
   const [fabElements,setFabs] = useState<null | JSX.Element[]>(null)
 
   const styleChildren = (cyclegraph:HTMLDivElement,fabs:JSX.Element[])=>{
@@ -62,12 +59,7 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
     if(fabElements){
       console.log('shouldbe loaded')
       if(graph.current){
-        const styled = styleChildren(graph.current,fabElements)
-        console.log(`fabs ${fabElements}`)
-        console.log(styled.length)
       return styleChildren(graph.current,fabElements)
-
-      //return fabElements.map((el)=> {return <div className='fab' >{el}</div>})
       }
     } else {
       return <div>Loading Fab</div>
@@ -77,7 +69,6 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
   return (
     <div className="App">
       <div className="cyclegraph" ref={graph}>
-          {console.log('render fabs')}
           {renderFabs()}
       </div>
     </div>
