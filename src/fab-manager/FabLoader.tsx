@@ -1,7 +1,5 @@
 import { Quad_Object, Store } from "n3"
 import json from './plugins.json'
-import EditFab from 'core-plugins'
-import semanticEditFab from "core-plugins"
 /*
 interface IFabProps {
   endpointUrl:string, 

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Layout from '../layout/Layout'
+import BackGround from "./BackGround";
 import CircularMenu from "./circularmenu/CirularMenu";
 import SparqlHandler from "./SparqlHandler";
 
@@ -43,6 +44,7 @@ const Twin = () => {
 
   return (
     <Layout>
+      <BackGround></BackGround>
       <h1>Digital Twin UI for {subject}</h1>
       { renderMenu() }
     </Layout>
