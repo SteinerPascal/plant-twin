@@ -1,7 +1,9 @@
  
 const webpack = require('webpack'); 
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+
 module.exports = function override(config) { 
+
     config.resolve.plugins = config.resolve.plugins.filter(plugin => !(plugin instanceof ModuleScopePlugin));
 		const fallback = config.resolve.fallback || {}; 
 		Object.assign(fallback, { 
@@ -19,7 +21,8 @@ module.exports = function override(config) {
     	process: 'process/browser', 
       Buffer: ['buffer', 'Buffer'] 
     }) 
-   ]) 
+   ])
+
    return config; }
 
 

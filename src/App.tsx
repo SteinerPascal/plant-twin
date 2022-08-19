@@ -3,7 +3,6 @@ import './App.scss';
 import Twin from "./digital-twin/Twin";
 import Manager from "./sparnaturalmanager/Manager";
 
-
 function App() {
   return (
       <Routes>

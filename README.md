@@ -60,3 +60,5 @@ The selection currently follows a very basic search where all the objects are tr
 it seems to work if it is not loaded from plugins
 IMPORTANT: the types between the plant twin and the plugins needs to be the same. for example @types/n3 AND also the same version of REACT
 react only as peer dependency see: https://stackoverflow.com/questions/56663785/invalid-hook-call-hooks-can-only-be-called-inside-of-the-body-of-a-function-com
+https://github.com/facebook/react/issues/15315
+Current solution is to load react as file from the component

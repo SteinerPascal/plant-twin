@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.8.1",
     "@geoman-io/leaflet-geoman-free": "^2.13.0",
     "@mui/icons-material": "^5.8.4",
@@ -15,9 +16,11 @@
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.47",
     "@types/rdf-data-model": "^1.0.3",
-    "core-plugins": "file:../core-plugins",
     "datatables.net": "^1.12.1",
-    "forwardfab": "file:../forwardfab",
+    "forwardfab": "file:../fabs/forwardfab",
+    "editfab": "file:../fabs/editfab",
+    "deletefab": "file:../fabs/deletefab",
+    "informationfab": "file:../fabs/informationfab",
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
     "n3": "^1.16.2",
@@ -33,7 +36,6 @@
     "sparql-http-client": "^2.4.1",
     "styled-components": "^5.3.5",
     "tsparticles": "^2.2.2",
-    "typescript": "^4.6.3",
     "web-vitals": "^0.2.4",
     "wicket": "^1.3.8",
     "workbox-background-sync": "^5.1.4",
@@ -82,8 +84,8 @@
     "@types/leaflet": "^1.7.11",
     "@types/leaflet.markercluster": "^1.5.1",
     "@types/n3": "^1.10.4",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "@types/sparql-http-client": "^2.2.8",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
@@ -96,6 +98,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "ts-essentials": "^9.2.0",
+    "typescript": "^4.7.4",
     "url": "^0.11.0"
   }
 }

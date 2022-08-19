@@ -33,6 +33,9 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
     return circleElements
   }
   const fabLoader = new FabLoader()
+
+  // Here we need to load all the fabs e.g plugins
+  // After they are loaded we call their utility function 'semanticQuery'. This query decides
   useEffect(() => {
     const fetchPlugins = async ()=>{
       const fabs = await fabLoader.loadFromConfig()
@@ -43,9 +46,9 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
       quadSet.forEach((q:Quad)=>{  
 
         const applicables:Array<PluginObject["component"]> = []     
-        fabs.forEach(f=>{
+        fabs.forEach(async (f)=>{
           console.log(`loadedFab: ${console.dir(f)}`)
-          if(f?.semanticQuery(endpointUrl,twinStore,q.object)) return applicables.push(f.component)
+          if(await f?.semanticQuery(endpointUrl,twinStore,q.object)) return applicables.push(f.component)
         });
         elements.push( <FabHolder key={q.object.value} endpointUrl={endpointUrl} binding={q} store={twinStore} fabs={applicables}/>)
       });
@@ -55,6 +58,7 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
 
   }, [twinStore]);
 
+  // this method takes all the fabs. styles them and gives it back as a list
   const renderFabs = ()=>{
     if(fabElements){
       console.log('shouldbe loaded')

@@ -1,6 +1,6 @@
 import React, { ErrorInfo } from 'react';
 
-class SparNaturalManagerBoundary extends React.Component {
+class SparNaturalManagerBoundary extends React.Component<{children: React.ReactNode},{}> {
   state = {
     errorMessage: '',
   };
