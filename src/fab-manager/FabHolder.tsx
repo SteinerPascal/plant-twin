@@ -4,15 +4,12 @@
 
 import { Quad, Store} from "n3"
 import {Planet} from "react-planet"
-import CustomBtn from "../digital-twin/circularmenu/buttons/CustomBtn"
-import SparqlClient from "sparql-http-client"
+import CustomBtn from "./buttons/CustomBtn"
 import { PluginObject } from "./FabLoader";
 
 
-export const FabHolder = ({endpointUrl, binding, store, fabs}:{endpointUrl:string, binding: Quad, store:Store, fabs:Array<PluginObject["component"]>}) => {
-    const client = new SparqlClient( {endpointUrl} )
-    console.log(`inside fabholder ${fabs.length}`)
-    
+export const FabHolder = ({endpointUrl, binding, store, fabs, actionHandler}:{endpointUrl:string, binding: Quad, store:Store, fabs:Array<PluginObject["component"]>, actionHandler: (jsxEl:JSX.Element)=>void}) => {
+
     return(
         <div>
             <p>{binding.object.value}</p>
@@ -28,7 +25,7 @@ export const FabHolder = ({endpointUrl, binding, store, fabs}:{endpointUrl:strin
                 bounceDirection="BOTTOM"
             >
                 {fabs.map(f=>{
-                    if(f)return f(endpointUrl,store,binding.object)
+                    if(f)return f(endpointUrl,store,binding,actionHandler)
                     
                 })}
                 <div />

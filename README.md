@@ -62,3 +62,5 @@ IMPORTANT: the types between the plant twin and the plugins needs to be the same
 react only as peer dependency see: https://stackoverflow.com/questions/56663785/invalid-hook-call-hooks-can-only-be-called-inside-of-the-body-of-a-function-com
 https://github.com/facebook/react/issues/15315
 Current solution is to load react as file from the component
+
+Was fehlt für plugins wäre permissions liste wie für eine app in android. wo sie im manifest die permissions festlegt.

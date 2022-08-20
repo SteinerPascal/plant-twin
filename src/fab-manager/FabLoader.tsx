@@ -1,4 +1,4 @@
-import { Quad_Object, Store } from "n3"
+import { Quad, Quad_Object, Store } from "n3"
 import json from './plugins.json'
 /*
 interface IFabProps {
@@ -12,7 +12,7 @@ export interface IFab extends React.FunctionComponentElement<IFabProps> {}
 
 export interface PluginObject {
   semanticQuery: (endpoint:string,store:Store,object:Quad_Object)=>boolean,
-  component: ( endpointUrl:string, store:Store, object:Quad_Object) => JSX.Element
+  component: ( endpointUrl:string, store:Store, triple:Quad,actionCB:(jsxEl:JSX.Element)=>void) => JSX.Element
 }
 
 // https://javascript.plainenglish.io/how-to-build-a-plugin-system-with-node-js-68c097eb3a2e

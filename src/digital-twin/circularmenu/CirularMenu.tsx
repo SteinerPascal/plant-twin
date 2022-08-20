@@ -3,19 +3,31 @@ import { useState } from "react";
 import { useRef, useEffect,} from "react";
 import { FabHolder } from "../../fab-manager/FabHolder";
 import FabLoader, { PluginObject } from "../../fab-manager/FabLoader";
-
-
-
+import ActionModal from "./ActionModal";
 
 import "./menu.scss";
+
+
 //https://codesandbox.io/s/circles-forked-wl8j87?file=/src/App.js
 
-//const Abstract = React.lazy(() => import("/home/pascal/plant-twin/src/fab-manager/AbstractFab") as Promise<{ default: ComponentType<any>; }>);
-
 const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Store})=> {
+  // Handling a action click on a plugin
+  const [open, onFabOpen] = useState(false);
+  const [actionEl, setActionEl] = useState(<div></div>)
+  const handleClose = () =>{
+    console.warn('CLOSE')
+    onFabOpen(false)
+  } ;
+  const handleClicked = (jsxEl:JSX.Element)=> {
+      console.log('handleclicked')
+      setActionEl(jsxEl)
+      onFabOpen(true)
+  }
+
   const graph = useRef<HTMLDivElement>(null);
   const [fabElements,setFabs] = useState<null | JSX.Element[]>(null)
 
+  //Utility function to set the right css to the htmldiv elements
   const styleChildren = (cyclegraph:HTMLDivElement,fabs:JSX.Element[])=>{
 
     let angle = 360 - 90;
@@ -32,10 +44,11 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
     console.log(`circles? ${circleElements.length}`)
     return circleElements
   }
-  const fabLoader = new FabLoader()
 
+  const fabLoader = new FabLoader()
   // Here we need to load all the fabs e.g plugins
-  // After they are loaded we call their utility function 'semanticQuery'. This query decides
+  // After they are loaded we call their utility function 'semanticQuery'. 
+  // This query decides then if that fab is applicable for this data.
   useEffect(() => {
     const fetchPlugins = async ()=>{
       const fabs = await fabLoader.loadFromConfig()
@@ -47,10 +60,9 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
 
         const applicables:Array<PluginObject["component"]> = []     
         fabs.forEach(async (f)=>{
-          console.log(`loadedFab: ${console.dir(f)}`)
           if(await f?.semanticQuery(endpointUrl,twinStore,q.object)) return applicables.push(f.component)
         });
-        elements.push( <FabHolder key={q.object.value} endpointUrl={endpointUrl} binding={q} store={twinStore} fabs={applicables}/>)
+        elements.push( <FabHolder key={q.object.value} endpointUrl={endpointUrl} binding={q} store={twinStore} fabs={applicables} actionHandler={handleClicked}/>)
       });
       setFabs(elements)
     }
@@ -61,7 +73,6 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
   // this method takes all the fabs. styles them and gives it back as a list
   const renderFabs = ()=>{
     if(fabElements){
-      console.log('shouldbe loaded')
       if(graph.current){
       return styleChildren(graph.current,fabElements)
       }
@@ -72,6 +83,7 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
 
   return (
     <div className="App">
+       <ActionModal open={open} handleClose={handleClose} actionEl={actionEl}></ActionModal>
       <div className="cyclegraph" ref={graph}>
           {renderFabs()}
       </div>
