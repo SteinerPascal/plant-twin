@@ -21,7 +21,7 @@ const Manager = () => {
     <Layout>
       <h1>Digital Twin Manager</h1>
       <div className="row">
-        <div id="ui-search" style={{width:"auto"}}>
+        <div id="ui-search" style={{minWidth:"1200p"}}>
         <SparNaturalManagerBoundary>
           <Sparnatural tab={tab} ></Sparnatural>
         </SparNaturalManagerBoundary>

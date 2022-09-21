@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 export default function CustomBtn(){
 
     return(
-        <IconButton aria-label="delete"  sx={{backgroundColor:'#6A802E', "&:hover": {
+        <IconButton aria-label="custombtn"  sx={{backgroundColor:'#6A802E', "&:hover": {
             backgroundColor: "#6A802E",
             cursor: "default",
             transform: "scale(1.2)"

@@ -17,10 +17,10 @@
     "@types/node": "^12.20.47",
     "@types/rdf-data-model": "^1.0.3",
     "datatables.net": "^1.12.1",
-    "forwardfab": "file:../fabs/forwardfab",
-    "editfab": "file:../fabs/editfab",
-    "deletefab": "file:../fabs/deletefab",
-    "informationfab": "file:../fabs/informationfab",
+    "deletefab": "file:../core-plugins/deletefab",
+    "editfab": "file:../core-plugins/editfab",
+    "forwardfab": "file:../core-plugins/forwardfab",
+    "informationfab": "file:../core-plugins/informationfab",
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
     "n3": "^1.16.2",
@@ -37,6 +37,7 @@
     "styled-components": "^5.3.5",
     "tsparticles": "^2.2.2",
     "web-vitals": "^0.2.4",
+    "webfab": "file:../core-plugins/webfab",
     "wicket": "^1.3.8",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
@@ -64,7 +65,14 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "plugins": [
+      "react-hooks"
+    ],
+    "rules": {
+      "react-hooks/rules-of-hooks": "error", 
+      "react-hooks/exhaustive-deps": "warn" 
+    }
   },
   "browserslist": {
     "production": [
@@ -90,6 +98,7 @@
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",

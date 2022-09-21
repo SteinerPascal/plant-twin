@@ -2,7 +2,6 @@ import { Quad, Store } from "n3";
 import { useState } from "react";
 import { useRef, useEffect,} from "react";
 import { FabHolder } from "../../fab-manager/FabHolder";
-import FabLoader, { PluginObject } from "../../fab-manager/FabLoader";
 import ActionModal from "./ActionModal";
 
 import "./menu.scss";
@@ -15,17 +14,15 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
   const [open, onFabOpen] = useState(false);
   const [actionEl, setActionEl] = useState(<div></div>)
   const handleClose = () =>{
-    console.warn('CLOSE')
     onFabOpen(false)
   } ;
   const handleClicked = (jsxEl:JSX.Element)=> {
-      console.log('handleclicked')
       setActionEl(jsxEl)
       onFabOpen(true)
   }
 
   const graph = useRef<HTMLDivElement>(null);
-  const [fabElements,setFabs] = useState<null | JSX.Element[]>(null)
+  const [fabHolders,setFabHolders] = useState<null | JSX.Element[]>(null)
 
   //Utility function to set the right css to the htmldiv elements
   const styleChildren = (cyclegraph:HTMLDivElement,fabs:JSX.Element[])=>{
@@ -41,43 +38,35 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
       }
       return <div style={style} className='circle' >{el}</div>
     })
-    console.log(`circles? ${circleElements.length}`)
     return circleElements
   }
 
-  const fabLoader = new FabLoader()
+
   // Here we need to load all the fabs e.g plugins
   // After they are loaded we call their utility function 'semanticQuery'. 
   // This query decides then if that fab is applicable for this data.
+ 
   useEffect(() => {
-    const fetchPlugins = async ()=>{
-      const fabs = await fabLoader.loadFromConfig()
+    const fetchPlugins = ()=>{
       // gets all the quads in the store
       const quadSet = twinStore.getQuads(null,null,null,null)
-      console.log(`quadset ${quadSet.length}`)
-      const elements:Array<JSX.Element> = []
-      quadSet.forEach((q:Quad)=>{  
-
-        const applicables:Array<PluginObject["component"]> = []     
-        fabs.forEach(async (f)=>{
-          if(await f?.semanticQuery(endpointUrl,twinStore,q.object)) return applicables.push(f.component)
-        });
-        elements.push( <FabHolder key={q.object.value} endpointUrl={endpointUrl} binding={q} store={twinStore} fabs={applicables} actionHandler={handleClicked}/>)
+      const elements:Array<JSX.Element> = quadSet.map((q:Quad)=>{  
+        return <FabHolder key={q.object.value} endpointUrl={endpointUrl} quad={q} store={twinStore} actionHandler={handleClicked}/>
       });
-      setFabs(elements)
+      setFabHolders(elements)
     }
     fetchPlugins()
 
   }, [twinStore]);
 
   // this method takes all the fabs. styles them and gives it back as a list
-  const renderFabs = ()=>{
-    if(fabElements){
+  const renderFabHolders = ()=>{
+    if(fabHolders){
       if(graph.current){
-      return styleChildren(graph.current,fabElements)
+      return styleChildren(graph.current,fabHolders)
       }
     } else {
-      return <div>Loading Fab</div>
+      return <div>Loading Fabholders</div>
     }
   }
 
@@ -85,7 +74,7 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
     <div className="App">
        <ActionModal open={open} handleClose={handleClose} actionEl={actionEl}></ActionModal>
       <div className="cyclegraph" ref={graph}>
-          {renderFabs()}
+          {renderFabHolders()}
       </div>
     </div>
   );

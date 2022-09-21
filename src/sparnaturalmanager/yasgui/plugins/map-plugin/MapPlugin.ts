@@ -88,7 +88,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         markerOptions: null,
         polygonDefaultColor: 'blue',
         polygonColors: [
-            'yellow',
+            'black',
             'green',
             'orange',
             'blue',

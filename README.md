@@ -64,3 +64,7 @@ https://github.com/facebook/react/issues/15315
 Current solution is to load react as file from the component
 
 Was fehlt für plugins wäre permissions liste wie für eine app in android. wo sie im manifest die permissions festlegt.
+
+NEW: Currently it's not possible to call a statehook in the fabs. that's due that they are loaded as normal JSX.Elements and the statehook is like the statehook of the fabloader. The fabs will always be loaded twice. Then if it's loaded the second time it calls the statehook in the fab component. This call will be accounted for in the FABHOLDER and will therefore have a different number of hook calls. That's not allowed
+
+possible solution https://bernieslearnings.com/rendering-a-list-of-lazy-components-in-react/

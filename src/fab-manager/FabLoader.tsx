@@ -1,4 +1,5 @@
-import { Quad, Quad_Object, Store } from "n3"
+import { Quad, Quad_Object, Store, Triple } from "n3"
+import React, { FunctionComponent } from "react"
 import json from './plugins.json'
 /*
 interface IFabProps {
@@ -11,7 +12,7 @@ export interface IFab extends React.FunctionComponentElement<IFabProps> {}
 
 
 export interface PluginObject {
-  semanticQuery: (endpoint:string,store:Store,object:Quad_Object)=>boolean,
+  semanticQuery: (endpoint:string,store:Store,quad:Quad)=>Promise<Boolean>,
   component: ( endpointUrl:string, store:Store, triple:Quad,actionCB:(jsxEl:JSX.Element)=>void) => JSX.Element
 }
 
@@ -21,12 +22,18 @@ export default class FabLoader {
   async loadFromConfig (path='./plugins.json') {
     const plugins: Array<PluginObject> = []
     const entries = Object.entries(json)
-    const a = `core-plugins`;
     const forward = await import('forwardfab')
     const delet = await import("deletefab")
     const edit = await import("editfab")
     const information = await import("informationfab")
-
+    const webfab = await import("webfab")
+    const laziness = React.lazy(()=>{
+      return new Promise((resolve)=>{
+        if(webfab)
+        return webfab.default as React.ComponentType<any>
+      })
+        
+    })
     
     return [{
       semanticQuery:delet.semanticQuery,
@@ -40,7 +47,12 @@ export default class FabLoader {
     },{
       semanticQuery:information.semanticQuery,
       component: information.default
-    }]
+    },
+    {
+      semanticQuery:webfab.semanticQuery,
+      component: webfab.default
+    }
+  ]
     /*
     return await Promise.all(entries.map(e=>{
       const [key, value] = e;
