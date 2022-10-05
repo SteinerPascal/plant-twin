@@ -49,17 +49,13 @@ export default {
         "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#auto_label",
     },
     {
-      "@id": "http://dbpedia.org/ontology/Country",
+      "@id": "http://www.w3.org/ns/sosa/Actuator",
       "@type": "Class",
       label: [
-        { "@value": "Country", "@language": "en" },
-        { "@value": "Pays", "@language": "fr" },
+        { "@value": "Actuator", "@language": "en" },
+        { "@value": "Actuator", "@language": "fr" },
       ],
-      tooltip: [
-        { "@value": "en", "@language": "en" },
-        { "@value": "fr", "@language": "fr" },
-      ],
-      faIcon: "fa-solid fa-earth-africa",
+      faIcon: "fa-solid fa-microchip",
     },
     {
       "@id": "http://twin-example/geneva#Tree",
@@ -74,14 +70,15 @@ export default {
       ],
       faIcon: "fa-solid fa-leaf",
     },
+    
     {
-      "@id": "http://dbpedia.org/ontology/Artwork",
+      "@id": "http://www.w3.org/ns/sosa/Sensor",
       "@type": "Class",
       label: [
-        { "@value": "Artwork", "@language": "en" },
-        { "@value": "Oeuvre", "@language": "fr" },
+        { "@value": "Sensor", "@language": "en" },
+        { "@value": "Sensor", "@language": "fr" },
       ],
-      faIcon: "fa-solid fa-paintbrush",
+      faIcon: "fa-solid fa-microscope",
     },
     {
       "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
@@ -115,16 +112,7 @@ export default {
       ],
       faIcon: "fa-solid fa-question",
     },
-    {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Search",
-      "@type": "Class",
-      subClassOf: "http://www.w3.org/2000/01/rdf-schema#Literal",
-      label: [
-        { "@value": "Search", "@language": "en" },
-        { "@value": "Rechercher", "@language": "fr" },
-      ],
-      faIcon: 'fa-solid fa-magnifying-glass',
-    },
+
     {
       "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Date",
       "@type": "Class",
@@ -135,28 +123,7 @@ export default {
       ],
       faIcon: "fas fa-calendar-alt",
     },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Movement",
-      "@type": "Class",
-      subClassOf: "sparnatural:NotInstantiatedClass",
-      label: [
-        { "@value": "Movement", "@language": "en" },
-        { "@value": "Mouvement", "@language": "fr" },
-      ],
-      faIcon: "fa-solid fa-people-group",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Category",
-      "@type": "Class",
-      subClassOf: "sparnatural:NotInstantiatedClass",
-      label: [
-        { "@value": "Category", "@language": "en" },
-        { "@value": "Catégorie", "@language": "fr" },
-      ],
-      faIcon: "fas fa-palette",
-    },
+
     {
       "@id":"http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Area",
       "@type": "Class",
@@ -179,52 +146,54 @@ export default {
       defaultLabelProperty:
       "http://www.opengis.net/ont/geosparql#asWKT",
     },
+    
     {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
-      "@type": "Class",
-      subClassOf: "http://www.w3.org/2000/01/rdf-schema#Literal",
-      label: [
-        { "@value": "Text", "@language": "en" },
-        { "@value": "Texte", "@language": "fr" },
-      ],
-      faIcon: "fa-solid fa-pen",
-    },
-    {
-      "@id": "http://dbpedia.org/ontology/country",
+      "@id": "http://www.w3.org/ns/sosa/hasFeatureOfInterest",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:ListProperty",
       datasource: "datasources:list_rdfslabel_alpha_with_count",
       label: [
-        { "@value": "country", "@language": "en" },
-        { "@value": "pays", "@language": "fr" },
+        { "@value": "hasFeatureOfInterest", "@language": "en" },
+        { "@value": "hasFeatureOfInterest", "@language": "fr" },
       ],
       tooltip: [
         {
-          "@value": "A museum can be located in a country",
+          "@value": "A Feature of Interest is something the Sensor observes",
           "@language": "en",
         },
         {
-          "@value": "Un musée peut se trouver dans un pays",
+          "@value": "A Feature of Interest is something the Sensor observes",
           "@language": "fr",
         },
       ],
-      domain: "http://dbpedia.org/ontology/Museum",
-      range: "http://dbpedia.org/ontology/Country",
+      domain:"http://www.w3.org/ns/sosa/Sensor",
+      range: "http://twin-example/geneva#Tree",
       enableOptional: true,
       enableNegation: true,
     },
     {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#countryOf",
+      "@id": "http://www.w3.org/ns/sosa/hasFeatureOfInterest",
       "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
+      subPropertyOf: "sparnatural:ListProperty",
+      datasource: "datasources:list_rdfslabel_alpha_with_count",
       label: [
-        { "@value": "country of", "@language": "en" },
-        { "@value": "lieu de", "@language": "fr" },
+        { "@value": "hasFeatureOfInterest", "@language": "en" },
+        { "@value": "hasFeatureOfInterest", "@language": "fr" },
       ],
-      domain: "http://dbpedia.org/ontology/Country",
-      range: "http://dbpedia.org/ontology/Museum",
-      sparqlString: "^<http://dbpedia.org/ontology/country>",
+      tooltip: [
+        {
+          "@value": "A Feature of Interest is something the Sensor observes",
+          "@language": "en",
+        },
+        {
+          "@value": "A Feature of Interest is something the Sensor observes",
+          "@language": "fr",
+        },
+      ],
+      domain:"http://www.w3.org/ns/sosa/Actuator",
+      range: "http://twin-example/geneva#Tree",
+      enableOptional: true,
+      enableNegation: true,
     },
     {
       "@id":
@@ -256,184 +225,35 @@ export default {
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
-        { "@value": "withinArea", "@language": "en" },
+        { "@value": "hasLocation", "@language": "en" },
         { "@value": "dans la zone", "@language": "fr" },
       ],
       domain: "http://twin-example/geneva#Tree",
       range: "http://twin-example/geneva#Location"
     },
     {
-      "@id": "http://dbpedia.org/ontology/museum",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
-      label: [
-        { "@value": "displayed at", "@language": "en" },
-        { "@value": "exposée à", "@language": "fr" },
-      ],
-      domain: "http://dbpedia.org/ontology/Artwork",
-      range: "http://dbpedia.org/ontology/Museum",
-    },
-    {
       "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#displays",
+        "http://www.opengis.net/ont/geosparql#hasLocation",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
-        { "@value": "displays", "@language": "en" },
-        { "@value": "expose", "@language": "fr" },
+        { "@value": "hasLocation", "@language": "en" },
+        { "@value": "dans la zone", "@language": "fr" },
       ],
-      domain: "http://dbpedia.org/ontology/Museum",
-      range: "http://dbpedia.org/ontology/Artwork",
-      sparqlString: "^<http://dbpedia.org/ontology/museum>",
-      enableNegation: true,
-    },
-    {
-      "@id": "http://dbpedia.org/ontology/author",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
-      label: [
-        { "@value": "author", "@language": "en" },
-        { "@value": "auteur", "@language": "fr" },
-      ],
-      domain: "http://dbpedia.org/ontology/Artwork",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      datasource: "datasources:search_rdfslabel_bifcontains",
+      domain: "http://www.w3.org/ns/sosa/Sensor",
+      range: "http://twin-example/geneva#Location"
     },
     {
       "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#created",
+        "http://www.w3.org/ns/sosa/triggersActionOn",
       "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
+      subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
-        { "@value": "created", "@language": "en" },
-        { "@value": "a créé", "@language": "fr" },
+        { "@value": "triggers Action On", "@language": "en" },
+        { "@value": "triggers Action On", "@language": "fr" },
       ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://dbpedia.org/ontology/Artwork",
-      sparqlString: "^<http://dbpedia.org/ontology/author>",
-    },
-    {
-      "@id": "http://fr.dbpedia.org/property/nationalité",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:LiteralListProperty",
-      label: [
-        { "@value": "nationality", "@language": "en" },
-        { "@value": "nationalité", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://dbpedia.org/ontology/Country",
-    },
-
-    {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#bornIn",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:ListProperty",
-      label: [
-        { "@value": "born in", "@language": "en" },
-        { "@value": "né à", "@language": "fr" },
-      ],
-      tooltip: [
-        {
-          "@value":
-            "the country in which the person was born, which is actually the <em>country of the city in which the person was born <b>!!!</b></em>",
-          "@language": "en",
-        },
-        {
-          "@value":
-            "the country in which the person was born, which is actually the <em>country of the city in which the person was born <b>!!!</b></em>",
-          "@language": "fr",
-        },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://dbpedia.org/ontology/Country",
-      sparqlString:
-        "<http://dbpedia.org/ontology/birthPlace>/<http://dbpedia.org/ontology/country>",
-      datasource: "datasources:list_rdfslabel_count",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#birthPlace",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
-      label: [
-        { "@value": "birth place", "@language": "en" },
-        { "@value": "lieu de naissance", "@language": "fr" },
-      ],
-      domain: "http://dbpedia.org/ontology/Country",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      sparqlString:
-        "^(<http://dbpedia.org/ontology/birthPlace>/<http://dbpedia.org/ontology/country>)",
-    },
-    {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#diedIn",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:ListProperty",
-      label: [
-        { "@value": "died at", "@language": "en" },
-        { "@value": "mort à", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://dbpedia.org/ontology/Country",
-      sparqlString:
-        "<http://dbpedia.org/ontology/deathPlace>/<http://dbpedia.org/ontology/country>",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#deathPlace",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:AutocompleteProperty",
-      label: [
-        { "@value": "death place", "@language": "en" },
-        { "@value": "lieu de décès", "@language": "fr" },
-      ],
-      domain: "http://dbpedia.org/ontology/Country",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      sparqlString:
-        "^(<http://dbpedia.org/ontology/deathPlace>/<http://dbpedia.org/ontology/country>)",
-    },
-    {
-      "@id": "http://dbpedia.org/ontology/deathDate",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:TimeProperty-Year",
-      label: [
-        { "@value": "death date", "@language": "en" },
-        { "@value": "date de décès", "@language": "fr" },
-      ],
-      beginDateProperty: "http://exemple.fr/beginDate",
-      endDateProperty: "http://exemple.fr/endDate",
-      exactDateProperty: "http://exemple.fr/exactDate",
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Date",
-    },
-    {
-      "@id": "http://dbpedia.org/ontology/birthDate",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:TimeProperty-Date",
-      label: [
-        { "@value": "birth date", "@language": "en" },
-        { "@value": "date de naissance", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Date",
-    },
-    {
-      "@id": "http://dbpedia.org/ontology/movement",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:TreeProperty",
-      label: [
-        { "@value": "movement", "@language": "en" },
-        { "@value": "mouvement", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Movement",
+      domain: "http://www.w3.org/ns/sosa/Sensor",
+      range: "http://www.w3.org/ns/sosa/Actuator"
     },
     {
       "@id": "http://purl.org/dc/terms/subject",
@@ -462,30 +282,6 @@ BIND(true AS ?hasChildren)
       treeChildrenDatasource: "datasources:tree_children_skosnarrower",
     },
     {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#text",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:GraphDBSearchProperty",
-      label: [
-        { "@value": "label or description", "@language": "en" },
-        { "@value": "libellé ou description", "@language": "fr" },
-      ],
-      domain: {
-        "@type": "Class",
-        unionOf: {
-          "@list": [
-            { "@id": "http://dbpedia.org/ontology/Museum" },
-            {
-              "@id":
-                "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-            },
-            { "@id": "http://dbpedia.org/ontology/Artwork" },
-          ],
-        },
-      },
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Search",
-      sparqlString: "rdfs:label|rdfs:comment",
-    },
-    {
       "@id": "http://www.w3.org/2000/01/rdf-schema#label",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
@@ -494,31 +290,6 @@ BIND(true AS ?hasChildren)
         { "@value": "nom", "@language": "fr" },
       ],
       domain: "http://dbpedia.org/ontology/Museum",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#a_label",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:SearchProperty",
-      isMultilingual: true,
-      label: [
-        { "@value": "name", "@language": "en" },
-        { "@value": "nom", "@language": "fr" },
-      ],
-      sparqlString: "rdfs:label",
-      domain: {
-        "@type": "Class",
-        unionOf: {
-          "@list": [
-            {
-              "@id":
-                "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-            },
-            { "@id": "http://dbpedia.org/ontology/Artwork" },
-          ],
-        },
-      },
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
     },
     {

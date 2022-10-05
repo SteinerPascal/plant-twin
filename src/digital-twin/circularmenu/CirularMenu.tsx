@@ -36,7 +36,7 @@ const CircularMenu = ({endpointUrl,twinStore}:{endpointUrl:string,twinStore:Stor
         transform:`rotate(${angle}deg) translate(${cyclegraph.clientWidth /
         1.9}px) rotate(-${angle}deg)`
       }
-      return <div style={style} className='circle' >{el}</div>
+      return <div key={angle} style={style} className='circle' >{el}</div>
     })
     return circleElements
   }

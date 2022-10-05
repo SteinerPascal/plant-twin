@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Link } from 'react-router-dom';
+import { DataFactory, Quad_Object } from 'n3';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -21,8 +22,28 @@ const btnStyle = {
     marginRight: '80px'
 }
 
-export default function BasicModal({open,handleClose,iri}:{open:boolean,handleClose:()=>void,iri:string}) {
+const getNamespaceObject = (q:string)=>{
+  if(q.includes('#')){
+      return {
+          namespace: `${q.split('#').at(0)}#`,
+          value: `${q.split('#').at(1)}`
+      }
+  } else {
+      return {
+          namespace:`${(q.split('/').slice(0, -1)).join('/')}`,
+          value:`${q.split('/').pop()}`
+      }
+  }
+}
 
+export default function BasicModal({open,handleClose,iri}:{open:boolean,handleClose:()=>void,iri:string}) {
+  const linkTarget = {
+    pathname: `/twin/${getNamespaceObject(iri).value}`,
+    key: iri, // we could use Math.random, but that's not guaranteed unique.
+    state: {
+      applied: true
+    }
+  };
   return (
     <div>
       <Modal
@@ -43,7 +64,7 @@ export default function BasicModal({open,handleClose,iri}:{open:boolean,handleCl
           <br />
           <div>
             <Button variant="contained">Open in Web</Button>
-            <Button component={Link} to={'/twin'} state={{ subject: iri }} variant="contained" sx={btnStyle}>Open in Application</Button>
+            <Button component={Link} to={linkTarget} state={{ subject: iri }} variant="contained" sx={btnStyle}>Open in Application</Button>
           </div>
         </Box>
       </Modal>

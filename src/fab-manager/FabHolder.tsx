@@ -17,18 +17,17 @@ export const FabHolder = ({endpointUrl, quad, store, actionHandler}:{endpointUrl
         const fetchFabs = async ()=>{
             const fabs = await fabLoader.loadFromConfig()
             addFabs(fabs)
-            console.log('fabs loaded')
         }
         fetchFabs()
     },[])
     const getFabs = ()=>{
         return loadedFabs?.map((f)=>{
-           return <FabContainer semanticQ={f.semanticQuery} comp={f.component} endpointUrl={endpointUrl} store={store} quad={quad} actionCB={actionHandler}  />
+           return <FabContainer key={`${f.component.name}-${quad.object.value}`} semanticQ={f.semanticQuery} comp={f.component} endpointUrl={endpointUrl} store={store} quad={quad} actionCB={actionHandler}  />
         })
     }
     return(
         <div>
-            <p style={{color:"white"}}>{quad.object.value}</p>
+            <p style={{color:"white", width:'max-content'}}>{quad.object.value}</p>
             <Planet
                 centerContent={<CustomBtn />}
                 hideOrbit

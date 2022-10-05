@@ -1,5 +1,5 @@
 import { Quad, Store } from "n3"
-import { Component, lazy, Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { PluginObject } from "./FabLoader"
 
 export default function FabContainer({semanticQ, comp,endpointUrl,store,quad,actionCB}:{semanticQ:PluginObject["semanticQuery"] ,comp:PluginObject["component"],endpointUrl:string,store:Store,quad:Quad,actionCB: (jsxEl:JSX.Element)=>void}){
