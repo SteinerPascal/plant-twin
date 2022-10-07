@@ -27,6 +27,7 @@ export default class FabLoader {
     const edit = await import("editfab")
     const information = await import("informationfab")
     const webfab = await import("webfab")
+    const wotfab = await import('wotfab')
     const laziness = React.lazy(()=>{
       return new Promise((resolve)=>{
         if(webfab)
@@ -51,6 +52,10 @@ export default class FabLoader {
     {
       semanticQuery:webfab.semanticQuery,
       component: webfab.default
+    },
+    {
+      semanticQuery: wotfab.semanticQuery,
+      component: wotfab.default
     }
   ]
     /*
