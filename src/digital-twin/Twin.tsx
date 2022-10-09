@@ -1,7 +1,7 @@
 import { DataFactory, Quad, Store } from "n3";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from '../layout/Layout'
 import BackGround from "./BackGround";
 import CircularMenu from "./circularmenu/CirularMenu";
@@ -12,13 +12,20 @@ interface RoutingState {
 }
 
 const Twin = () => {
-  // This is the rerendering of the digital twin if the forwardfab was clicked
+  
+  let navigate = useNavigate();
+  // Customnavigation for plugins (fabs) they currently can not trigger the route component
   var ps = window.history.pushState; 
   window.history.pushState = function(){
     ps.apply(window.history, arguments as any); // preserve normal functionality
     console.log("navigating", arguments); // do something extra here; raise an event
     if("subject" in arguments[0] && arguments[2].includes("/twin/") && arguments[0].subject != subject){
       changeSubject(arguments[0].subject)
+    }
+    if("subject" in arguments[0] && arguments[2].includes("/tdeditor/") ){
+
+        // navigate to the tdeditor with the 
+        navigate(arguments[2],{state:arguments[0]}); 
     }
   }; // end forwardfab
 

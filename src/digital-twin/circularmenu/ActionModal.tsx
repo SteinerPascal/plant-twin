@@ -6,10 +6,11 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   maxWidth: '1000px',
-  maxHeight: '700px',
+  maxHeight: '900px',
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
+  display:'flex',
   p: 4,
 };
 

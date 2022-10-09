@@ -39,9 +39,11 @@ const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boo
           <MenuItem icon={<FaGem />}>
             <span>Manager</span>
           </MenuItem>
-          
           <MenuItem icon={<FaGem />}>
             <span>Digital Twin</span>  
+          </MenuItem>
+          <MenuItem icon={<FaGem />}>
+            <span>TD editor</span>
           </MenuItem>
         </Menu>
       </SidebarContent>
