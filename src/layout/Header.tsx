@@ -50,7 +50,7 @@ const Header = ({toggled,
               <FaBars />
             </MenuBtn>
             <Typography variant="h6" flexGrow={1}>
-              Photos
+              Digital Twin Framework
             </Typography>
     
             <div>

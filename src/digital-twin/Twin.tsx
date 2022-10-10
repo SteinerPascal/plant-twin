@@ -11,7 +11,7 @@ interface RoutingState {
   subject: string
 }
 
-const Twin = () => {
+const Twin = ({endpointUrl}:{endpointUrl:string}) => {
   
   let navigate = useNavigate();
   // Customnavigation for plugins (fabs) they currently can not trigger the route component
@@ -31,8 +31,7 @@ const Twin = () => {
 
   const [subject,changeSubject] = useState((useLocation().state as RoutingState).subject)
   const [twinStore, createStore] = useState<Store>(new Store());
-  // create Store and get twin information
-  const endpointUrl = "http://localhost:7200/repositories/geneva-example"
+
   // TODO: move away from hardcoded endpoint
   const sparqlHandler = new SparqlHandler(endpointUrl)
   const [menu,renderMenu] = useState<JSX.Element >(<div>LOADING DIGITAL TWIN</div>)

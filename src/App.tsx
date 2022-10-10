@@ -5,11 +5,13 @@ import Manager from "./sparnaturalmanager/Manager";
 import TdEditor from "./td-editor/TdEditor";
 
 function App() {
+  // create Store and get twin information
+  const endpointUrl = "http://localhost:7200/repositories/geneva-example"
   return (
       <Routes>
         <Route path="/" element={<Manager />} />
-        <Route path="/twin/*" element={<Twin />} />
-        <Route path='/tdeditor/*' element={<TdEditor/>} />
+        <Route path="/twin/*" element={<Twin endpointUrl={endpointUrl}/>} />
+        <Route path='/tdeditor/*' element={<TdEditor endpointUrl={endpointUrl}/>} />
       </Routes>
   );
 }

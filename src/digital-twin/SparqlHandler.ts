@@ -25,7 +25,6 @@ export default class SparqlHandler {
         return bindingsStream
     }
 
-
     async queryConstruct(query:string){
         const bindingsStream = await this.client.query.construct(query)
         return bindingsStream

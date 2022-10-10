@@ -37,7 +37,7 @@ const JSONEditorComponent = (props) => {
   const [tabs, setTabs] = useState([]);
 
   const editorWillMount = async (monaco) => {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    monaco.languages.json?.jsonDefaults?.setDiagnosticsOptions({
       validate: true,
       enableSchemaRequest: true,
       schemas: [],
@@ -60,7 +60,7 @@ const JSONEditorComponent = (props) => {
           });
         }
 
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        monaco.languages.json?.jsonDefaults?.setDiagnosticsOptions({
           validate: true,
           enableSchemaRequest: true,
           schemas: jsonSchemaObjects,

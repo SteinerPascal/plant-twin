@@ -6,11 +6,14 @@ import AppHeader from "./components/AppHeader/AppHeader";
 import JSONEditorComponent from "./components/Editor/Editor";
 import TDViewer from "./components/TDViewer/TDViewer";
 import GlobalState from "./context/GlobalState";
+import namespace from '@rdfjs/namespace';
+import { SELECT } from '@tpluscode/sparql-builder'
+import SparqlClient from "sparql-http-client"
 
 interface RoutingState {
   subject: string
 }
-export default function TdEditor(props:any) {
+export default function TdEditor({endpointUrl}:{endpointUrl:string}) {
 
   const [subject,changeSubject] = useState<string | undefined>((useLocation().state as RoutingState)?.subject)
 
@@ -56,9 +59,63 @@ export default function TdEditor(props:any) {
 
     element.onmousedown = onMouseDown;
 }
+interface MongoConfig{
+  endpoint: string,
+  databaseName:string,
+  collectionName:string
+}
+const getMongoConfig = (subject:string)=>{
+  const ex = namespace('http://twin-example/geneva#')
+  const config = namespace('http://twin-example/config#')
+  const rdf = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+  return new Promise((resolve,reject)=>{
+      let endpoint = null
+      const query = SELECT.ALL.WHERE`<${subject}> ${config.hostedOn} ?endpoint.
+      ?endpoint ${rdf.type} ${config.MongoEndpoint};
+        ${config.databaseName} ?databaseName;
+        ${config.collectionName} ?collectionName`.build();
+      const client = new SparqlClient( {endpointUrl} )
+      client.query.select(query).then((bindingsStream:any)=>{
+        console.log('inside')
+        console.log(query)
+          // check if this entity has a property assertion to a rdfs:comment
+          bindingsStream.on('data', (row:MongoConfig) => {
+              if(row['endpoint'] && row['databaseName'] && row['collectionName']){
+                  const config = {
+                    endpoint: row['endpoint'],
+                    databaseName: row['databaseName'],
+                    collectionName: row['collectionName']
+                  }
+                  resolve(config) 
+              }
+              reject(null)
+          });
+
+          bindingsStream.on('error', (err:Error) => {
+              console.error(err)
+              reject(null)
+          });
+      })
+  })
+}
 
   const loadTDfromRouting = async (subject:string)=>{
-    
+    const config = await getMongoConfig(subject) as MongoConfig
+    console.log(`found config ${JSON.stringify(config)}`)
+    const response = await fetch(`http://localhost:3001/api/td/${subject}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+     
+    })
+    .catch(error => {
+      console.error(error)
+      return;
+    });
+    response?.json().then((json)=>{
+      console.dir(json)
+    })
   }
 
   useEffect(() => {
@@ -67,7 +124,7 @@ export default function TdEditor(props:any) {
       loadTDfromRouting(subject)
     } 
     dragElement(document.getElementById("separator"), "H"); 
-  }, [props])
+  }, [endpointUrl,subject])
   
   return(
     <Layout>
