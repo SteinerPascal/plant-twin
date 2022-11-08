@@ -57,7 +57,7 @@ export default {
         { "@value": "en", "@language": "en" },
         { "@value": "fr", "@language": "fr" },
       ],
-      faIcon: "fa-solid fa-leaf",
+      faIcon: "fa-solid fa-tree",
     },
     {
       "@id": "http://aims.fao.org/aos/agrovoc/c_5630",
@@ -109,13 +109,22 @@ export default {
       faIcon: "fas fa-map-marked-alt"
     },
     {
-      "@id":"http://www.geonames.org/ontology#A.ADM1",
+      "@id":"http://www.geonames.org/ontology#A.ADM4",
       "@type": "Class",
       label: [
         { "@value": "Canton", "@language": "en" },
         { "@value": "Canton", "@language": "fr" },
       ],
       faIcon: "fas fa-map-marked-alt"
+    },
+    {
+      "@id":"http://twin-example/geneva#AgrovocTerm",
+      "@type": "Class",
+      label: [
+        { "@value": "Agrovoc Term", "@language": "en" },
+        { "@value": "Agrovoc Term", "@language": "fr" },
+      ],
+      faIcon: "fa-solid fa-leaf"
     },
     {
       "@id":"http://twin-example/geneva#Location",
@@ -129,7 +138,6 @@ export default {
       defaultLabelProperty:
       "http://www.opengis.net/ont/geosparql#asWKT",
     },
-    
     {
       "@id": "http://www.w3.org/ns/sosa/observes",
       "@type": "ObjectProperty",
@@ -151,6 +159,44 @@ export default {
       ],
       domain:"http://www.w3.org/ns/sosa/Sensor",
       range: "http://twin-example/geneva#Tree",
+      enableOptional: true,
+      enableNegation: true,
+    },
+    {
+      "@id": "http://twin-example/geneva#hasAgrovocTerm",
+      "@type": "ObjectProperty",
+      subPropertyOf: "sparnatural:ListProperty",
+      datasource: {
+          queryString: `
+          PREFIX schema: <http://schema.org/>
+          PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+          PREFIX gn: <http://www.geonames.org/ontology#>
+          PREFIX agrovoc: <http://aims.fao.org/aos/agrovoc/>
+          PREFIX ex: <http://twin-example/geneva#> 
+          select distinct ?uri ?label where {
+              ?tree rdf:type ex:Tree.
+              ?tree ex:hasAgrovocTerm ?agrovocTerm.
+              ?tree rdfs:label ?label.
+              Bind(?agrovocTerm as ?uri)
+          } `,
+          sparqlEndpointUrl:"http://localhost:7200/repositories/geneva-demo"
+        },
+      label: [
+        { "@value": "is of Tree type", "@language": "en" },
+        { "@value": "is of Tree type", "@language": "fr" },
+      ],
+      tooltip: [
+        {
+          "@value": "Subclass of a tree such as 'Quercus'",
+          "@language": "en",
+        },
+        {
+          "@value": "Subclass of a tree such as 'Quercus'",
+          "@language": "fr",
+        },
+      ],
+      domain:"http://twin-example/geneva#Tree",
+      range: "http://twin-example/geneva#AgrovocTerm",
       enableOptional: true,
       enableNegation: true,
     },
@@ -199,17 +245,20 @@ export default {
         PREFIX schema: <http://schema.org/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX gn: <http://www.geonames.org/ontology#>
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
         select distinct ?uri ?label where {
             ?Canton schema:name ?label.
             ?Canton gn:featureCode gn:A.ADM1 .  
             ?Canton <http://purl.org/dc/terms/issued> ?Date.
             FILTER (?Date = "2022-01-01"^^xsd:date)
-            Bind(?Canton as ?uri)
+            ?Canton geo:hasGeometry ?geom.
+            ?geom geo:asWKT ?wkt
+            Bind(?wkt as ?uri)
         }
         `,
         sparqlEndpointUrl:'https://geo.ld.admin.ch/query'
       },
-      subPropertyOf: "sparnatural:ListProperty",
+      subPropertyOf: "sparnatural:ListPropertyGeo",
       label: [
         { "@value": "within canton", "@language": "en" },
         { "@value": "within canton", "@language": "fr" },
@@ -232,7 +281,7 @@ export default {
     },
     {
       "@id":
-        "http://www.opengis.net/ont/geosparql#hasLocation",
+        "http://www.opengis.net/ont/geosparql#hasGeometry",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
