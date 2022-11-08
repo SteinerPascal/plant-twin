@@ -121,8 +121,8 @@ export default {
       "@id":"http://twin-example/geneva#AgrovocTerm",
       "@type": "Class",
       label: [
-        { "@value": "Agrovoc Term", "@language": "en" },
-        { "@value": "Agrovoc Term", "@language": "fr" },
+        { "@value": "Tree type", "@language": "en" },
+        { "@value": "Tree type", "@language": "fr" },
       ],
       faIcon: "fa-solid fa-leaf"
     },
@@ -318,14 +318,29 @@ export default {
     {
       "@id": "http://aims.fao.org/aos/agrontology#hasPathogen",
       "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:SearchProperty",
+      subPropertyOf: "sparnatural:TreeProperty",
       label: [
         { "@value": "has Possible Pathogen", "@language": "en" },
         { "@value": "has Possible Pathogen", "@language": "fr" },
       ],
       domain: "http://twin-example/geneva#Tree",
       range: "http://aims.fao.org/aos/agrovoc/c_5630",
-      sparqlString:"<http://twin-example/geneva#hasAgrovocTerm> / <http://aims.fao.org/aos/agrontology#hasPathogen>"
+      treeRootsDatasource: {
+          queryString: `
+          PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+          SELECT ?uri ?label ?hasChildren
+          WHERE {
+          VALUES ?uri {<http://aims.fao.org/aos/agrovoc/c_5630>}
+          ?uri skos:prefLabel ?label .
+          filter langMatches(lang(?label), 'en')
+          BIND(true AS ?hasChildren)
+          }
+          `,
+          sparqlEndpointUrl:"https://agrovoc.fao.org/sparql"
+      },
+      treeChildrenDatasource: "datasources:tree_children_skosnarrower",
+      sparqlString:"<http://twin-example/geneva#hasAgrovocTerm> / <http://aims.fao.org/aos/agrontology#hasPathogen>",
+      sparqlService: "http://data.mydomain.org/ontology/sparnatural-config#AgrovocService",
     },
     {
       "@id":
@@ -353,6 +368,13 @@ export default {
       varName: 'aWKT',
       sparqlString: "<http://www.opengis.net/ont/geosparql#asWKT>",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
+    },
+    {
+      "@id":
+        "http://data.mydomain.org/ontology/sparnatural-config#AgrovocService",
+      "@type": "sd:Service",
+      endpoint: "https://agrovoc.fao.org/sparql" ,
+      label: "Agrovoc SPARQL Endpoint"
     }
   ],
 };
