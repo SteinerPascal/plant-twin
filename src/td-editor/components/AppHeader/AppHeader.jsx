@@ -23,14 +23,24 @@ import { CreateTdDialog } from "../Dialogs/CreateTdDialog";
 import { getFileHandle, getFileHTML5, _readFileHTML5 } from "../../util.js";
 
 
-export default function AppHeader() {
-  /*
-  useEffect(()=>{
-    if(openSubject){
-      readFile(openSubject)
-    }
-  })*/
+export default function AppHeader(mongoTD) {
+
   const context = useContext(ediTDorContext);
+
+  useEffect(()=>{
+    console.log('useffevt in header')
+    if(mongoTD.mongoTD){
+      let copy = JSON.parse(JSON.stringify(mongoTD.mongoTD))
+      console.dir(copy)
+      context.updateLinkedTd(undefined);
+      context.addLinkedTd(copy);
+      console.log('beauty?')
+      console.log(JSON.stringify(copy))
+      context.updateOfflineTD(JSON.stringify(copy,null,4));
+      context.updateIsModified(false);
+    }
+
+  },[mongoTD])
   /**
    * Check if the Browser Supports the new Native File System Api (Chromium 86.0)
    */
@@ -59,6 +69,8 @@ export default function AppHeader() {
     return file.text ? file.text() : _readFileHTML5(file);
   }, []);
 
+
+
   const readFile = useCallback(
     async (file, fileHandle) => {
       try {
@@ -70,6 +82,8 @@ export default function AppHeader() {
         else {
           linkedTd["./" + file.name] = JSON.parse(td);
         }
+        console.log('inside readfile')
+        console.dir(context)
         context.updateLinkedTd(undefined);
         context.addLinkedTd(linkedTd);
         context.updateOfflineTD(td);

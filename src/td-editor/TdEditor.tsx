@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Layout from "../layout/Layout";
 import AppFooter from "./AppFooter";
@@ -9,13 +9,17 @@ import GlobalState from "./context/GlobalState";
 import namespace from '@rdfjs/namespace';
 import { SELECT } from '@tpluscode/sparql-builder'
 import SparqlClient from "sparql-http-client"
+import ediTDorContext from "./context/ediTDorContext";
+import { Literal } from "n3";
+import { editdorReducer } from "./context/editorReducers";
 
 interface RoutingState {
   subject: string
 }
 export default function TdEditor({endpointUrl}:{endpointUrl:string}) {
-
+  const context = useContext(ediTDorContext);
   const [subject,changeSubject] = useState<string | undefined>((useLocation().state as RoutingState)?.subject)
+  const [mongoTD,loadMongoTD] = useState<null | any>(null)
 
   
   const dragElement = (element:any, direction:any) => {
@@ -60,9 +64,9 @@ export default function TdEditor({endpointUrl}:{endpointUrl:string}) {
     element.onmousedown = onMouseDown;
 }
 interface MongoConfig{
-  endpoint: string,
-  databaseName:string,
-  collectionName:string
+  urlEndpoint: Literal,
+  databaseName:Literal,
+  collectionName:Literal
 }
 const getMongoConfig = (subject:string)=>{
   const ex = namespace('http://twin-example/geneva#')
@@ -70,19 +74,24 @@ const getMongoConfig = (subject:string)=>{
   const rdf = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
   return new Promise((resolve,reject)=>{
       let endpoint = null
-      const query = SELECT.ALL.WHERE`<${subject}> ${config.hostedOn} ?endpoint.
-      ?endpoint ${rdf.type} ${config.MongoEndpoint};
+      const query = SELECT.ALL.WHERE`<${subject}> ${config.hostedOn} ?endpointObj.
+      ?endpointObj ${rdf.type} ${config.MongoEndpoint};
+        ${config.urlEndpoint} ?urlEndpoint;
         ${config.databaseName} ?databaseName;
         ${config.collectionName} ?collectionName`.build();
       const client = new SparqlClient( {endpointUrl} )
+      
       client.query.select(query).then((bindingsStream:any)=>{
         console.log('inside')
+        console.log(endpointUrl)
         console.log(query)
+        console.dir(bindingsStream)
           // check if this entity has a property assertion to a rdfs:comment
           bindingsStream.on('data', (row:MongoConfig) => {
-              if(row['endpoint'] && row['databaseName'] && row['collectionName']){
+            console.log(row)
+              if(row['urlEndpoint'] && row['databaseName'] && row['collectionName']){
                   const config = {
-                    endpoint: row['endpoint'],
+                    urlEndpoint: row['urlEndpoint'],
                     databaseName: row['databaseName'],
                     collectionName: row['collectionName']
                   }
@@ -101,8 +110,9 @@ const getMongoConfig = (subject:string)=>{
 
   const loadTDfromRouting = async (subject:string)=>{
     const config = await getMongoConfig(subject) as MongoConfig
-    console.log(`found config ${JSON.stringify(config)}`)
-    const response = await fetch(`http://localhost:3001/api/td/${subject}`, {
+    const request = `${config.urlEndpoint.value}${subject}`
+    console.log(request)
+    const response = await fetch(`${config.urlEndpoint.value}${subject}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -114,13 +124,21 @@ const getMongoConfig = (subject:string)=>{
       return;
     });
     response?.json().then((json)=>{
-      console.dir(json)
+      console.log('got json')
+      console.dir(JSON.parse(JSON.stringify(json.data)))
+      context.updateLinkedTd(json.data);
+      context.updateOfflineTD(JSON.stringify(json.data));
+      console.log('tdeditor before add td')
+      console.dir(context)
+      context.addLinkedTd(JSON.parse(JSON.stringify(json.data)));
+      context.updateIsModified(false);
+      loadMongoTD(json.data)
     })
   }
 
   useEffect(() => {
     // load the td if chosen by the digital twin framework
-    if(subject){
+    if(subject && !mongoTD){
       loadTDfromRouting(subject)
     } 
     dragElement(document.getElementById("separator"), "H"); 
@@ -130,7 +148,7 @@ const getMongoConfig = (subject:string)=>{
     <Layout>
       <GlobalState>
         <main className="h-full w-screen flex flex-col">
-            <AppHeader></AppHeader>
+            <AppHeader mongoTD={mongoTD}></AppHeader>
             <div className="flex-grow splitter flex flex-row w-full height-adjust">
                 <div className="w-5/12" id="first"><JSONEditorComponent /></div>
                 <div id="separator"></div>

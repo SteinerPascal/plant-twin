@@ -38,17 +38,6 @@ export default {
       "@type": "Ontology",
     },
     {
-      "@id": "http://dbpedia.org/ontology/Museum",
-      "@type": "Class",
-      label: [
-        { "@value": "Museum", "@language": "en" },
-        { "@value": "Musée", "@language": "fr" },
-      ],
-      faIcon: "fa-solid fa-building-columns",
-      defaultLabelProperty:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#auto_label",
-    },
-    {
       "@id": "http://www.w3.org/ns/sosa/Actuator",
       "@type": "Class",
       label: [
@@ -70,7 +59,15 @@ export default {
       ],
       faIcon: "fa-solid fa-leaf",
     },
-    
+    {
+      "@id": "http://aims.fao.org/aos/agrovoc/c_5630",
+      "@type": "Class",
+      label: [
+        { "@value": "Pathogen", "@language": "en" },
+        { "@value": "Pathogen", "@language": "fr" },
+      ],
+      faIcon: "fas fa-bug",
+    },
     {
       "@id": "http://www.w3.org/ns/sosa/Sensor",
       "@type": "Class",
@@ -79,28 +76,6 @@ export default {
         { "@value": "Sensor", "@language": "fr" },
       ],
       faIcon: "fa-solid fa-microscope",
-    },
-    {
-      "@id": "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      "@type": "Class",
-      label: [
-        { "@value": "Person", "@language": "en" },
-        { "@value": "Personne", "@language": "fr" },
-      ],
-      tooltip: [
-        {
-          "@value":
-            "This is a person blah blah blah in the tooltip and this should be approximately this size long and maybe a bit longer.",
-          "@language": "en",
-        },
-        {
-          "@value":
-            "This is a person blah blah blah in the tooltip and this should be approximately this size long and maybe a bit longer.",
-          "@language": "fr",
-        },
-      ],
-      faIcon: "fa-solid fa-user",
-      sparqlString: "<http://dbpedia.org/ontology/Person>",
     },
     {
       "@id":
@@ -123,7 +98,6 @@ export default {
       ],
       faIcon: "fas fa-calendar-alt",
     },
-
     {
       "@id":"http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Area",
       "@type": "Class",
@@ -131,6 +105,15 @@ export default {
       label: [
         { "@value": "Area", "@language": "en" },
         { "@value": "Région", "@language": "fr" },
+      ],
+      faIcon: "fas fa-map-marked-alt"
+    },
+    {
+      "@id":"http://www.geonames.org/ontology#A.ADM1",
+      "@type": "Class",
+      label: [
+        { "@value": "Canton", "@language": "en" },
+        { "@value": "Canton", "@language": "fr" },
       ],
       faIcon: "fas fa-map-marked-alt"
     },
@@ -148,13 +131,13 @@ export default {
     },
     
     {
-      "@id": "http://www.w3.org/ns/sosa/hasFeatureOfInterest",
+      "@id": "http://www.w3.org/ns/sosa/observes",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:ListProperty",
       datasource: "datasources:list_rdfslabel_alpha_with_count",
       label: [
-        { "@value": "hasFeatureOfInterest", "@language": "en" },
-        { "@value": "hasFeatureOfInterest", "@language": "fr" },
+        { "@value": "observes", "@language": "en" },
+        { "@value": "observes", "@language": "fr" },
       ],
       tooltip: [
         {
@@ -172,13 +155,13 @@ export default {
       enableNegation: true,
     },
     {
-      "@id": "http://www.w3.org/ns/sosa/hasFeatureOfInterest",
+      "@id": "http://www.w3.org/ns/sosa/actsOnProperty",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:ListProperty",
       datasource: "datasources:list_rdfslabel_alpha_with_count",
       label: [
-        { "@value": "hasFeatureOfInterest", "@language": "en" },
-        { "@value": "hasFeatureOfInterest", "@language": "fr" },
+        { "@value": "actsOnProperty", "@language": "en" },
+        { "@value": "actsOnProperty", "@language": "fr" },
       ],
       tooltip: [
         {
@@ -206,6 +189,34 @@ export default {
       ],
       domain: "http://twin-example/geneva#Location",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Area"
+    },
+    {
+      "@id":
+        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#withinCanton",
+      "@type": "ObjectProperty",
+      datasource: {
+        queryString: `
+        PREFIX schema: <http://schema.org/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX gn: <http://www.geonames.org/ontology#>
+        select distinct ?uri ?label where {
+            ?Canton schema:name ?label.
+            ?Canton gn:featureCode gn:A.ADM1 .  
+            ?Canton <http://purl.org/dc/terms/issued> ?Date.
+            FILTER (?Date = "2022-01-01"^^xsd:date)
+            Bind(?Canton as ?uri)
+        }
+        `,
+        sparqlEndpointUrl:'https://geo.ld.admin.ch/query'
+      },
+      subPropertyOf: "sparnatural:ListProperty",
+      label: [
+        { "@value": "within canton", "@language": "en" },
+        { "@value": "within canton", "@language": "fr" },
+      ],
+      domain: "http://twin-example/geneva#Location",
+      range: "http://www.geonames.org/ontology#A.ADM1",
+      sparqlString: 'gn:featureCode'
     },
     {
       "@id":
@@ -256,41 +267,16 @@ export default {
       range: "http://www.w3.org/ns/sosa/Actuator"
     },
     {
-      "@id": "http://purl.org/dc/terms/subject",
+      "@id": "http://aims.fao.org/aos/agrontology#hasPathogen",
       "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:TreeProperty",
+      subPropertyOf: "sparnatural:SearchProperty",
       label: [
-        { "@value": "category", "@language": "en" },
-        { "@value": "catégorie", "@language": "fr" },
+        { "@value": "has Possible Pathogen", "@language": "en" },
+        { "@value": "has Possible Pathogen", "@language": "fr" },
       ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Category",
-      treeRootsDatasource: {
-        queryString: `
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-SELECT ?uri ?label ?hasChildren
-WHERE {
-VALUES ?uri {<http://fr.dbpedia.org/resource/Catégorie:Peintre_français>}
-?uri skos:prefLabel ?label .
-FILTER(lang(?label) = '' || lang(?label) = $lang)
-BIND(true AS ?hasChildren)
-}
-  `,
-      },
-      treeChildrenDatasource: "datasources:tree_children_skosnarrower",
-    },
-    {
-      "@id": "http://www.w3.org/2000/01/rdf-schema#label",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:NonSelectableProperty",
-      label: [
-        { "@value": "name", "@language": "en" },
-        { "@value": "nom", "@language": "fr" },
-      ],
-      domain: "http://dbpedia.org/ontology/Museum",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
+      domain: "http://twin-example/geneva#Tree",
+      range: "http://aims.fao.org/aos/agrovoc/c_5630",
+      sparqlString:"<http://twin-example/geneva#hasAgrovocTerm> / <http://aims.fao.org/aos/agrontology#hasPathogen>"
     },
     {
       "@id":
@@ -318,65 +304,6 @@ BIND(true AS ?hasChildren)
       varName: 'aWKT',
       sparqlString: "<http://www.opengis.net/ont/geosparql#asWKT>",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#unknownProperty",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:ListProperty",
-      label: [
-        { "@value": "unknown property", "@language": "en" },
-        { "@value": "propriété inconnue", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Unknown",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#reverseUnknown",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:ListProperty",
-      label: [
-        { "@value": "unknown property reverse", "@language": "en" },
-        { "@value": "propriété inconnue inversée", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Unknown",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#unknownBetweenKnownClasses",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:ListProperty",
-      label: [
-        {
-          "@value": "unknown property between known classes",
-          "@language": "en",
-        },
-        {
-          "@value": "propriété inconnue entre classe connues",
-          "@language": "fr",
-        },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://dbpedia.org/ontology/Museum",
-    },
-    {
-      "@id":
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#isAlive",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:BooleanProperty",
-      label: [
-        { "@value": "is alive", "@language": "en" },
-        { "@value": "est vivant", "@language": "fr" },
-      ],
-      domain:
-        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Person",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
-    },
+    }
   ],
 };

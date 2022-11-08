@@ -27,6 +27,7 @@ export const FabHolder = ({endpointUrl, quad, store, actionHandler}:{endpointUrl
     }
     return(
         <div>
+            <p style={{color:"white", width:'max-content'}}>{quad.predicate.value}</p>
             <p style={{color:"white", width:'max-content'}}>{quad.object.value}</p>
             <Planet
                 centerContent={<CustomBtn />}
@@ -44,6 +45,7 @@ export const FabHolder = ({endpointUrl, quad, store, actionHandler}:{endpointUrl
                 <div />
                 <div />
             </Planet>
+            
         </div>
     )
 }

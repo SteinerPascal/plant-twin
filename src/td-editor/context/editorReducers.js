@@ -29,6 +29,7 @@ const updateOfflineTDReducer = (offlineTD, state) => {
   try{
     //If the user write Thing description without wizard, we save it in linkedTd
     if(!linkedTd){
+      console.log('update td')
       let parsedTd=JSON.parse(offlineTD)
       linkedTd={}
       let href=parsedTd["title"]||"ediTDor Thing"
@@ -135,6 +136,7 @@ const addPropertyFormReducer = (form, state) => {
 };
 
 const addLinkedTd = (td, state) =>{
+  console.log('addlinked td')
   let resultingLinkedTd ={}
   let linkedTd= state.linkedTd
 

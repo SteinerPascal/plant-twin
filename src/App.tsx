@@ -6,7 +6,7 @@ import TdEditor from "./td-editor/TdEditor";
 
 function App() {
   // create Store and get twin information
-  const endpointUrl = "http://localhost:7200/repositories/geneva-example"
+  const endpointUrl = "http://localhost:7200/repositories/geneva-demo"
   return (
       <Routes>
         <Route path="/" element={<Manager />} />
