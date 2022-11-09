@@ -6,7 +6,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.8.1",
     "@geoman-io/leaflet-geoman-free": "^2.13.0",
-    "@mui/icons-material": "^5.8.4",
+    "@mui/icons-material": "^5.10.9",
     "@rdfjs/data-model": "^2.0.1",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^11.2.7",

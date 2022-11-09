@@ -16,6 +16,7 @@ import ediTDorContext from "../../context/ediTDorContext";
 import { Trash2 } from "react-feather";
 import EventRepeatIcon from '@mui/icons-material/EventRepeat';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import PrecisionManufacturingOutlined from "@mui/icons-material/PrecisionManufacturingOutlined";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import CreateIcon from '@mui/icons-material/Create';
@@ -62,6 +63,9 @@ export function ObserveForm(props) {
                 <div className="text-formOrange place-self-center text-center text-xs px-4">Observe</div>
             </div>
             <div className="place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formOrange" onClick={() => deleteForm(props)}>
                 <EventRepeatIcon sx={{ color: "black", fontSize: "18px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -83,6 +87,9 @@ export function UnobserveForm(props) {
                 <div className="text-formRed place-self-center text-center text-xs px-4">Unobserve</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+            <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formRed" onClick={() => deleteForm(props)}>
                 <EventBusyIcon sx={{ color: "black", fontSize: "18px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -104,6 +111,9 @@ export function ObserveAllForm(props) {
                 <div className="text-formOrange place-self-center text-center text-xs px-4">ObserveAll</div>
             </div>
             <div className="place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formOrange" onClick={() => deleteForm(props)}>
                 <EventRepeatIcon sx={{ color: "black", fontSize: "18px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -125,6 +135,9 @@ export function UnobserveAllForm(props) {
                 <div className="text-formRed place-self-center text-center text-xs px-4">UnobserveAll</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formRed" onClick={() => deleteForm(props)}>
                 <EventBusyIcon sx={{ color: "black", fontSize: "18px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -146,7 +159,9 @@ export function ReadForm(props) {
                 <div className="text-formGreen place-self-center text-center text-xs px-4">Read</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
-           
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formGreen" onClick={() => deleteForm(props)}>
                 <FindInPageIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -168,6 +183,9 @@ export function ReadMultipleForm(props) {
                 <div className="text-formGreen place-self-center text-center text-xs px-4">ReadMultiple</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formGreen" onClick={() => deleteForm(props)}>
                 <FindInPageIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -189,6 +207,9 @@ export function ReadAllForm(props) {
                 <div className="text-formGreen place-self-center text-center text-xs px-4">ReadAll</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formGreen" onClick={() => deleteForm(props)}>
                 <FindInPageIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -210,6 +231,9 @@ export function WriteForm(props) {
                 <div className="text-formBlue place-self-center text-center text-xs px-4">Write</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formBlue" onClick={() => deleteForm(props)}>
                 <CreateIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -231,6 +255,9 @@ export function WriteMultipleForm(props) {
                 <div className="text-formBlue place-self-center text-center text-xs px-4">WriteMultiple</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formBlue" onClick={() => deleteForm(props)}>
                 <CreateIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -252,6 +279,9 @@ export function WriteAllForm(props) {
                 <div className="text-formBlue place-self-center text-center text-xs px-4">WriteAll</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formBlue" onClick={() => deleteForm(props)}>
                 <CreateIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -274,6 +304,9 @@ export function InvokeForm(props) {
                 <div className="text-formRed place-self-center text-center text-xs px-4">Invoke</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formRed" onClick={() => deleteForm(props)}>
                 <PrecisionManufacturingOutlined sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
@@ -295,6 +328,9 @@ export function UndefinedForm(props) {
                 <div className="place-self-center text-center text-xs px-4">Undefined</div>
             </div>
             <div className=" place-self-center pl-3 text-base overflow-hidden flex-grow">{props.form.href}</div>
+<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+            </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-white" onClick={() => deleteForm(props)}>
                 <Trash2 size={16} color="black" />
             </button>

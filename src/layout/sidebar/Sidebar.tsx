@@ -8,6 +8,7 @@ import {
   SidebarContent,
 } from 'react-pro-sidebar';
 import { FaGem, FaGithub,  } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boolean,rtl:boolean,toggled:boolean,handleToggleSidebar:(value: boolean) => void;}) => {
   return (
@@ -19,8 +20,7 @@ const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boo
       onToggle={handleToggleSidebar}
     >
       <SidebarHeader>
-
-      <div className="sidebar-header">
+        <div className="sidebar-header">
           <p>John Doe</p>
           <div className="d-flex justify-content-center">
             <div className="position-absolute bottom-0">
@@ -36,14 +36,18 @@ const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boo
 
       <SidebarContent>
         <Menu iconShape="circle">
-          <MenuItem icon={<FaGem />}>
-            <span>Manager</span>
+          <MenuItem  icon={<FaGem />}>
+            <Link to="/">
+              <span>Manager</span>
+            </Link>
           </MenuItem>
           <MenuItem icon={<FaGem />}>
             <span>Digital Twin</span>  
           </MenuItem>
           <MenuItem icon={<FaGem />}>
-            <span>TD editor</span>
+            <Link to="/tdeditor/">
+              <span>TD editor</span>
+            </Link> 
           </MenuItem>
         </Menu>
       </SidebarContent>

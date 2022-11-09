@@ -1,7 +1,6 @@
 //https://github.com/innFactory/react-planet
 //https://morioh.com/p/a2d037c571d7
 import { Quad, Store} from "n3"
-import React, { Suspense } from "react";
 import { useEffect, useState } from "react";
 import {Planet} from "react-planet"
 import CustomBtn from "./buttons/CustomBtn"

@@ -106,16 +106,16 @@ export default {
         { "@value": "Area", "@language": "en" },
         { "@value": "Région", "@language": "fr" },
       ],
-      faIcon: "fas fa-map-marked-alt"
+      faIcon: "fa-solid fa-earth-africa"
     },
     {
-      "@id":"http://www.geonames.org/ontology#A.ADM4",
+      "@id":"http://www.geonames.org/ontology#A.ADM1",
       "@type": "Class",
       label: [
         { "@value": "Canton", "@language": "en" },
         { "@value": "Canton", "@language": "fr" },
       ],
-      faIcon: "fas fa-map-marked-alt"
+      faIcon: "fa-solid fa-map-pin"
     },
     {
       "@id":"http://twin-example/geneva#AgrovocTerm",
@@ -323,7 +323,7 @@ export default {
         { "@value": "has Possible Pathogen", "@language": "en" },
         { "@value": "has Possible Pathogen", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#Tree",
+      domain: "http://twin-example/geneva#AgrovocTerm",
       range: "http://aims.fao.org/aos/agrovoc/c_5630",
       treeRootsDatasource: {
           queryString: `
@@ -339,7 +339,6 @@ export default {
           sparqlEndpointUrl:"https://agrovoc.fao.org/sparql"
       },
       treeChildrenDatasource: "datasources:tree_children_skosnarrower",
-      sparqlString:"<http://twin-example/geneva#hasAgrovocTerm> / <http://aims.fao.org/aos/agrontology#hasPathogen>",
       sparqlService: "http://data.mydomain.org/ontology/sparnatural-config#AgrovocService",
     },
     {
