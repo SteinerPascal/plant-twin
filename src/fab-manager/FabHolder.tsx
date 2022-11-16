@@ -3,6 +3,8 @@
 import { Quad, Store} from "n3"
 import { useEffect, useState } from "react";
 import {Planet} from "react-planet"
+import SparqlHandler from "../digital-twin/SparqlHandler";
+import MuiIconMatcher from "../iconmatcher/MuiIconMatcher";
 import CustomBtn from "./buttons/CustomBtn"
 import FabContainer from "./FabContainer";
 import FabLoader, { PluginObject } from "./FabLoader";
@@ -19,17 +21,46 @@ export const FabHolder = ({endpointUrl, quad, store, actionHandler}:{endpointUrl
         }
         fetchFabs()
     },[])
+
     const getFabs = ()=>{
         return loadedFabs?.map((f)=>{
            return <FabContainer key={`${f.component.name}-${quad.object.value}`} semanticQ={f.semanticQuery} comp={f.component} endpointUrl={endpointUrl} store={store} quad={quad} actionCB={actionHandler}  />
         })
     }
+
+    const renderFabIcon = () => {
+        if(quad.object.termType === "Literal") return MuiIconMatcher.getLiteralIcon()
+        const quadSet = store.getQuads(quad.object,SparqlHandler.RDF.type,null,null)
+        const icons:Array<JSX.Element> = []
+        quadSet.forEach((q:Quad)=>{
+          const match = MuiIconMatcher.matchBtnIcon(q.object.value)
+          if(match){
+            icons.push(match)
+            return
+          }
+        })
+        
+        if(icons.length >= 1) return icons[0]
+        // Try to match the predicate
+        const prefixMatch = MuiIconMatcher.matchBtnIcon(quad.object.value)
+        if(prefixMatch){
+            icons.push(prefixMatch)
+        }
+        if(icons.length >= 1) return icons[0]
+
+        return MuiIconMatcher.getDefaultBtnIcon()
+        
+      }
+
+    const getWithoutNamespace = (iri:string)=>{
+        if(iri.includes('#')) return iri.split('#').at(-1)
+        return iri.split('/').at(-1)
+    }
     return(
         <div>
-            <p style={{color:"white", width:'max-content'}}>{quad.predicate.value}</p>
-            <p style={{color:"white", width:'max-content'}}>{quad.object.value}</p>
+            <p style={{position:'absolute',left:'-20px',top:'-40px', color:"white", width:'max-content'}}>{`${getWithoutNamespace(quad.predicate.value)} => ${getWithoutNamespace(quad.object.value)}`}</p>
             <Planet
-                centerContent={<CustomBtn />}
+                centerContent={<CustomBtn icon={renderFabIcon()}/>}
                 hideOrbit
                 autoClose={true}
                 orbitRadius={60}

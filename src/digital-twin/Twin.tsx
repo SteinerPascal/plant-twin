@@ -37,7 +37,7 @@ const Twin = ({endpointUrl}:{endpointUrl:string}) => {
   const [menu,renderMenu] = useState<JSX.Element >(<div>LOADING DIGITAL TWIN</div>)
 
   useEffect(() => {
-    const resultStream = sparqlHandler.describeTwin(DataFactory.namedNode(subject))
+    const resultStream = SparqlHandler.describeTwin(DataFactory.namedNode(subject))
     resultStream.then(result =>{      
       result.on('data',(binding)=>{
         console.log(`data:`)
@@ -47,7 +47,7 @@ const Twin = ({endpointUrl}:{endpointUrl:string}) => {
         twinStore.add(binding as Quad) // result comes in RDF/JS Quad
       })
       result.on('end',()=>{
-        renderMenu(<CircularMenu endpointUrl={endpointUrl} twinStore={twinStore}></CircularMenu>)
+        renderMenu(<CircularMenu subject= {subject} endpointUrl={endpointUrl} twinStore={twinStore}></CircularMenu>)
       })
     })
 
