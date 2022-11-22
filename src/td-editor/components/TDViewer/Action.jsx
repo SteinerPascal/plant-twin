@@ -71,7 +71,7 @@ export default function Action(props) {
                     />
                 </div>
                 {forms.map((form, i) => (
-                    <Form key={i} form={form} propName={props.actionName} interactionType={"action"}></Form>
+                    <Form key={i} attributes={attributes} form={form} propName={props.actionName} interactionType={"action"}></Form>
                 ))}
             </div>
         </details>

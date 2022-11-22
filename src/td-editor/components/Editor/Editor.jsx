@@ -75,7 +75,7 @@ const JSONEditorComponent = (props) => {
   const editorDidMount = (editor, monaco) => {
     editor.onDidChangeModelDecorations(() => {
       const model = editor.getModel();
-      if (model === null || model.getModeId() !== "json") return;
+      if (!model || typeof model?.getModeId !== 'function'|| model?.getModeId() !== "json") return;
     });
   };
 

@@ -21,7 +21,7 @@ export default class MuiIconMatcher{
     ])
     private static iconTwinTypeMap = new Map<string,JSX.Element>([
         ['http://www.w3.org/ns/sosa/Actuator',<MemoryIcon sx={this.twinIconStyle} />],
-        ['http://twin-example/geneva#Tree',<ParkIcon sx={this.twinIconStyle} />],
+        ['http://www.w3id.org/def/irrig#Tree',<ParkIcon sx={this.twinIconStyle} />],
         ['http://twin-example/geneva#Space',<NaturePeopleIcon sx={this.twinIconStyle} />],
         ['http://www.w3.org/ns/sosa/Sensor',<DeviceThermostatIcon sx={this.twinIconStyle} />],
         ['http://www.w3.org/ns/sosa/TemperatureSensor',<DeviceThermostatIcon sx={this.twinIconStyle} />],
@@ -33,7 +33,7 @@ export default class MuiIconMatcher{
     ])
     private static iconBtnTypeMap = new Map<string,JSX.Element>([
         ['http://www.w3.org/ns/sosa/Actuator',<MemoryIcon sx={this.btnStyle} />],
-        ['http://twin-example/geneva#Tree',<ParkIcon sx={this.btnStyle} />],
+        ['http://www.w3id.org/def/irrig#Tree',<ParkIcon sx={this.btnStyle} />],
         ['http://twin-example/geneva#Space',<NaturePeopleIcon sx={this.btnStyle} />],
         ['http://www.w3.org/ns/sosa/Sensor',<DeviceThermostatIcon sx={this.btnStyle} />],
         ['http://www.w3.org/ns/sosa/TemperatureSensor',<DeviceThermostatIcon sx={this.btnStyle} />],

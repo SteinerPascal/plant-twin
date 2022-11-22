@@ -32,22 +32,16 @@ const Twin = ({endpointUrl}:{endpointUrl:string}) => {
   const [subject,changeSubject] = useState((useLocation().state as RoutingState).subject)
   const [twinStore, createStore] = useState<Store>(new Store());
 
-  // TODO: move away from hardcoded endpoint
-  const sparqlHandler = new SparqlHandler(endpointUrl)
   const [menu,renderMenu] = useState<JSX.Element >(<div>LOADING DIGITAL TWIN</div>)
 
   useEffect(() => {
     const resultStream = SparqlHandler.describeTwin(DataFactory.namedNode(subject))
     resultStream.then(result =>{      
       result.on('data',(binding)=>{
-        console.log(`data:`)
-        console.dir(binding)
-        //console.dir(`bind: ${JSON.stringify(binding)}`)
-        createStore(new Store())
-        twinStore.add(binding as Quad) // result comes in RDF/JS Quad
+        SparqlHandler.rdfStore.add(binding as Quad) // result comes in RDF/JS Quad
       })
       result.on('end',()=>{
-        renderMenu(<CircularMenu subject= {subject} endpointUrl={endpointUrl} twinStore={twinStore}></CircularMenu>)
+        renderMenu(<CircularMenu subject= {subject} endpointUrl={endpointUrl} twinStore={SparqlHandler.rdfStore}></CircularMenu>)
       })
     })
 

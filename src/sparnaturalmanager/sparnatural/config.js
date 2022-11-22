@@ -47,7 +47,7 @@ export default {
       faIcon: "fa-solid fa-microchip",
     },
     {
-      "@id": "http://twin-example/geneva#Tree",
+      "@id": "http://www.w3id.org/def/irrig#Tree",
       "@type": "Class",
       label: [
         { "@value": "Tree", "@language": "en" },
@@ -127,6 +127,15 @@ export default {
       faIcon: "fa-solid fa-leaf"
     },
     {
+      "@id":"http://www.w3.org/ns/ssn/Property",
+      "@type": "Class",
+      label: [
+        { "@value": "Property", "@language": "en" },
+        { "@value": "Property", "@language": "fr" },
+      ],
+      faIcon: "fa-solid fa-star-shooting"
+    },
+    {
       "@id":"http://twin-example/geneva#Location",
       "@type": "Class",
       subClassOf: "http://www.w3.org/2000/01/rdf-schema#Literal",
@@ -139,7 +148,10 @@ export default {
       "http://www.opengis.net/ont/geosparql#asWKT",
     },
     {
-      "@id": "http://www.w3.org/ns/sosa/observes",
+
+    },
+    {
+      "@id": "http://www.w3.org/ns/sosa/observesProperty",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:ListProperty",
       datasource: "datasources:list_rdfslabel_alpha_with_count",
@@ -149,16 +161,16 @@ export default {
       ],
       tooltip: [
         {
-          "@value": "A Feature of Interest is something the Sensor observes",
+          "@value": "A sensor observes a Property of a feature of interest",
           "@language": "en",
         },
         {
-          "@value": "A Feature of Interest is something the Sensor observes",
+          "@value": "A sensor observes a Property of a feature of interest",
           "@language": "fr",
         },
       ],
       domain:"http://www.w3.org/ns/sosa/Sensor",
-      range: "http://twin-example/geneva#Tree",
+      range: "http://www.w3.org/ns/ssn/Property",
       enableOptional: true,
       enableNegation: true,
     },
@@ -195,7 +207,7 @@ export default {
           "@language": "fr",
         },
       ],
-      domain:"http://twin-example/geneva#Tree",
+      domain:"http://www.w3id.org/def/irrig#Tree",
       range: "http://twin-example/geneva#AgrovocTerm",
       enableOptional: true,
       enableNegation: true,
@@ -211,16 +223,16 @@ export default {
       ],
       tooltip: [
         {
-          "@value": "A Feature of Interest is something the Sensor observes",
+          "@value": "An actuator acts on a property",
           "@language": "en",
         },
         {
-          "@value": "A Feature of Interest is something the Sensor observes",
+          "@value": "An actuator acts on property",
           "@language": "fr",
         },
       ],
       domain:"http://www.w3.org/ns/sosa/Actuator",
-      range: "http://twin-example/geneva#Tree",
+      range: "http://www.w3.org/ns/ssn/Property",
       enableOptional: true,
       enableNegation: true,
     },
@@ -288,7 +300,7 @@ export default {
         { "@value": "hasLocation", "@language": "en" },
         { "@value": "dans la zone", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#Tree",
+      domain: "http://www.w3id.org/def/irrig#Tree",
       range: "http://twin-example/geneva#Location"
     },
     {

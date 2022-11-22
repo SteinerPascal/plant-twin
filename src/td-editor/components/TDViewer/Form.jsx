@@ -20,6 +20,9 @@ import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import PrecisionManufacturingOutlined from "@mui/icons-material/PrecisionManufacturingOutlined";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import CreateIcon from '@mui/icons-material/Create';
+import ForceGraph from "../../../graph-visualizer/ForceGraph";
+import ForceGarphErrorBoundary from "../../../graph-visualizer/ForceGraphErrorBoundary";
+import { useState } from "react";
 
 
 export default function Form(props) {
@@ -35,7 +38,7 @@ export default function Form(props) {
         "writeproperty": <WriteForm type="properties" form={props.form} propName={props.propName} />,
         "writemultipleproperties": <WriteMultipleForm type="forms" form={props.form} formIndex={props.propName} />,
         "writeallproperties": <WriteAllForm type="forms" form={props.form} formIndex={props.propName} />,
-        "invokeaction": <InvokeForm type="actions" form={props.form} propName={props.propName} />,
+        "invokeaction": <InvokeForm type="actions" attributes={props.attributes} form={props.form} propName={props.propName} />,
         "unsubscribeevent": <UnobserveForm type="events" form={props.form} propName={props.propName} />,
     }
 
@@ -63,7 +66,7 @@ export function ObserveForm(props) {
                 <div className="text-formOrange place-self-center text-center text-xs px-4">Observe</div>
             </div>
             <div className="place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
-<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
                 <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formOrange" onClick={() => deleteForm(props)}>
@@ -255,7 +258,7 @@ export function WriteMultipleForm(props) {
                 <div className="text-formBlue place-self-center text-center text-xs px-4">WriteMultiple</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
-<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+            <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
                 <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formBlue" onClick={() => deleteForm(props)}>
@@ -279,7 +282,7 @@ export function WriteAllForm(props) {
                 <div className="text-formBlue place-self-center text-center text-xs px-4">WriteAll</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
-<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
+                <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
                 <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formBlue" onClick={() => deleteForm(props)}>
@@ -298,15 +301,23 @@ export function InvokeForm(props) {
     const deleteForm = (e) => {
         context.removeForm(e)
     }
+    let openFab = false
+    const [affordanceGraph,renderGraph] = useState(<div></div>)
+    const explainAffordance = (props) => {
+        renderGraph( <ForceGraph openFab={true} subject={props?.attributes?.find(a=>{return a?.key === "@type"})?.props?.children[2]}/>)
+    }
     return (
         <div className="flex flex-row items-center justify-start h-10 w-full bg-formRed rounded-md px-4 mt-2 bg-opacity-75 border-2 border-formRed">
+            <ForceGarphErrorBoundary>
+                {affordanceGraph}
+            </ForceGarphErrorBoundary>
             <div className="flex h-6 w-16 bg-white rounded-md place-self-center justify-center">
                 <div className="text-formRed place-self-center text-center text-xs px-4">Invoke</div>
             </div>
             <div className=" place-self-center pl-3 text-base text-white overflow-hidden flex-grow">{props.form.href}</div>
-<button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => deleteForm(props)}>
-                <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
-            </button>
+                <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full" onClick={() => explainAffordance(props)}>
+                    <PsychologyAltIcon sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
+                </button>
             <button className="text-base w-6 h-6 p-1 m-1 shadow-md rounded-full bg-formRed" onClick={() => deleteForm(props)}>
                 <PrecisionManufacturingOutlined sx={{ color: "black", fontSize: "20px", position:"relative",top:"-5px", right:"1px"}} />
             </button>
