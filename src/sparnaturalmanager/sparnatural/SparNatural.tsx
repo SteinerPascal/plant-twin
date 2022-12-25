@@ -5,11 +5,9 @@ import "Sparnatural/dist/sparnatural.css"
 import config from "./config";
 import Tab from "@triply/yasgui/build/ts/src/Tab";
 
-
 interface SparNatural extends HTMLElement {
   settings:any
 }
-
 
 const Sparnatural =({tab}:{tab:Tab | null}) => {
   const [error, setError] = useState(false);

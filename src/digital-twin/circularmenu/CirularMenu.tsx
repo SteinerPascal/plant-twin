@@ -1,10 +1,10 @@
 import { Quad, Store } from "n3";
 import { useState } from "react";
 import { useRef, useEffect,} from "react";
-import { FabHolder } from "../../fab-manager/FabHolder";
+import { FabHolder } from "../fab-manager/FabHolder";
 import MuiIconMatcher from "../../iconmatcher/MuiIconMatcher";
 import IconButton from "@mui/material/IconButton";
-import SparqlHandler from "../SparqlHandler";
+import SparqlHandler from "../../SparqlHandler";
 import ActionModal from "./ActionModal";
 import "./menu.scss";
 

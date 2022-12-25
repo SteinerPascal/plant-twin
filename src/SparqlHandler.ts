@@ -43,6 +43,12 @@ export default class SparqlHandler {
         return bindingsStream
     }
 
+    static getMapData() {
+        if(!this.client) throw Error('No SparqlClient initialized!')
+        const query = SELECT`*`.WHERE`?`.build()
+
+    }
+
     static getEndpointUrl() {
         return this.endpointUrl
     }

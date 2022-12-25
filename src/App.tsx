@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import './App.scss';
-import SparqlHandler from "./digital-twin/SparqlHandler";
+import SparqlHandler from "./SparqlHandler";
 import Twin from "./digital-twin/Twin";
 import Manager from "./sparnaturalmanager/Manager";
 import TdEditor from "./td-editor/TdEditor";
@@ -14,6 +14,8 @@ function App() {
         <Route path="/" element={<Manager />} />
         <Route path="/twin/*" element={<Twin endpointUrl={endpointUrl}/>} />
         <Route path='/tdeditor/*' element={<TdEditor endpointUrl={endpointUrl}/>} />
+        <Route path='/mapviewer/*' element={<TdEditor endpointUrl={endpointUrl}/>} />
+
       </Routes>
   );
 }

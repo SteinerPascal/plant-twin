@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Layout from '../layout/Layout'
 import BackGround from "./BackGround";
 import CircularMenu from "./circularmenu/CirularMenu";
-import SparqlHandler from "./SparqlHandler";
+import SparqlHandler from "../SparqlHandler";
 
 interface RoutingState {
   subject: string

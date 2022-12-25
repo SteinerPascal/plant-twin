@@ -3,8 +3,8 @@
 import { Quad, Store} from "n3"
 import { useEffect, useState } from "react";
 import {Planet} from "react-planet"
-import SparqlHandler from "../digital-twin/SparqlHandler";
-import MuiIconMatcher from "../iconmatcher/MuiIconMatcher";
+import SparqlHandler from "../../SparqlHandler";
+import MuiIconMatcher from "../../iconmatcher/MuiIconMatcher";
 import CustomBtn from "./buttons/CustomBtn"
 import FabContainer from "./FabContainer";
 import FabLoader, { PluginObject } from "./FabLoader";

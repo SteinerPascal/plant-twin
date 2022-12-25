@@ -4,7 +4,7 @@ import { NamedNode } from "n3";
 import convertToD3 from "./quad2D3";
 import ActionModal from "../digital-twin/circularmenu/ActionModal";
 import GraphComponent from "./GraphComponent";
-import SparqlHandler from "../digital-twin/SparqlHandler";
+import SparqlHandler from "../SparqlHandler";
 
 
 export default function ForceGraph({subject,openFab}:{subject:string,openFab:boolean}){
