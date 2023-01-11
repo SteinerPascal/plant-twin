@@ -49,6 +49,11 @@ const Sidebar = ({ collapsed, rtl, toggled, handleToggleSidebar }:{collapsed:boo
               <span>TD editor</span>
             </Link> 
           </MenuItem>
+          <MenuItem icon={<FaGem />}>
+            <Link to="/mapviewer/">
+              <span>Map</span>
+            </Link> 
+          </MenuItem>
         </Menu>
       </SidebarContent>
 

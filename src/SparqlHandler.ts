@@ -1,6 +1,6 @@
 import { NamedNode, Store } from "n3";
 import SparqlClient from "sparql-http-client"
-import { CONSTRUCT } from '@tpluscode/sparql-builder'
+import { CONSTRUCT, SELECT } from '@tpluscode/sparql-builder'
 import namespace from '@rdfjs/namespace';
 import iri from "iri"
 //import QueryEngineBase from "@comunica/query-sparql-rdfjs";
@@ -11,7 +11,9 @@ export default class SparqlHandler {
     static rdfStore = new Store()
     static RDF = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     static SOSA = namespace('http://www.w3.org/ns/sosa/')
-    static IRRIG = namespace('http://www.w3id.org/def/irrig')
+    static IRRIG = namespace('http://www.w3id.org/def/irrig#')
+    static GEO = namespace('http://www.opengis.net/ont/geosparql#')
+    static SKOS = namespace('http://www.w3.org/2004/02/skos/core#')
     static ns =  new Map<string, string>([
         ["rdf", 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'],
         ["sosa", 'http://www.w3.org/ns/sosa/'],
@@ -42,11 +44,18 @@ export default class SparqlHandler {
         const bindingsStream = this.client.query.construct(query)
         return bindingsStream
     }
-
+    // Retrives data for the LeafletContainer
     static getMapData() {
         if(!this.client) throw Error('No SparqlClient initialized!')
-        const query = SELECT`*`.WHERE`?`.build()
-
+        const query = SELECT`*`.WHERE`
+        ?s a ${this.IRRIG.Tree};
+    	    ${this.GEO.hasGeometry} ?pt;
+    	    ${this.SKOS.prefLabel} ?prefLbl;
+    	    ${this.SKOS.broader}/${this.SKOS.prefLabel}?broaderLbl.
+        ?pt ${this.GEO.asWKT} ?wkt`.LIMIT(100)
+        .build()
+        const bindingsStream = this.client.query.select(query)
+        return bindingsStream
     }
 
     static getEndpointUrl() {
