@@ -48,11 +48,11 @@ export default class SparqlHandler {
     static getMapData() {
         if(!this.client) throw Error('No SparqlClient initialized!')
         const query = SELECT`*`.WHERE`
-        ?s a ${this.IRRIG.Tree};
-    	    ${this.GEO.hasGeometry} ?pt;
-    	    ${this.SKOS.prefLabel} ?prefLbl;
-    	    ${this.SKOS.broader}/${this.SKOS.prefLabel}?broaderLbl.
-        ?pt ${this.GEO.asWKT} ?wkt`.LIMIT(100)
+        ?subject a ${this.IRRIG.Tree};
+    	    ${this.GEO.hasGeometry} ?location;
+    	    ${this.SKOS.prefLabel} ?preferred_label;
+    	    ${this.SKOS.broader}/${this.SKOS.prefLabel}?broader_label.
+        ?location ${this.GEO.asWKT} ?wkt`
         .build()
         const bindingsStream = this.client.query.select(query)
         return bindingsStream
