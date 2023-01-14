@@ -31,14 +31,14 @@ const Layout = ({ children }:{children:any}) => {
           handleToggleSidebar={handleToggleSidebar}
           collapsed={collapsed}
         />
-        <main>
+        <main >
         <Header toggled={toggled}
           collapsed={collapsed}
           rtl={rtl}
           handleToggleSidebar={handleToggleSidebar}
           handleCollapsedChange={handleCollapsedChange}
           handleRtlChange={ handleRtlChange} />
-        <div className="app-content">{children}</div>
+        <div className="app-content"style={{width:"100%",height:"100%"}}>{children}</div>
       </main>
     </div>
     </React.Fragment>

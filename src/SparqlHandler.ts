@@ -10,20 +10,20 @@ export default class SparqlHandler {
     private static client: SparqlClient
     static rdfStore = new Store()
     static RDF = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    static RDFS = namespace('http://www.w3.org/2000/01/rdf-schema#')
     static SOSA = namespace('http://www.w3.org/ns/sosa/')
     static IRRIG = namespace('http://www.w3id.org/def/irrig#')
     static GEO = namespace('http://www.opengis.net/ont/geosparql#')
     static SKOS = namespace('http://www.w3.org/2004/02/skos/core#')
+    static SAREF = namespace('https://saref.etsi.org/core/')
+    static SSNSYSTEM = namespace('http://www.w3.org/ns/ssn/systems/')
     static ns =  new Map<string, string>([
         ["rdf", 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'],
         ["sosa", 'http://www.w3.org/ns/sosa/'],
         ['irrig', 'http://www.w3id.org/def/irrig']
     ]);
 
-    
-    private constructor(){
-
-    }
+    private constructor(){}
 
     // This gets all the related infos to the twin entity
     // It is the main source of information for all the FABs and actions
@@ -45,7 +45,7 @@ export default class SparqlHandler {
         return bindingsStream
     }
     // Retrives data for the LeafletContainer
-    static getMapData() {
+    static getMapTreeData() {
         if(!this.client) throw Error('No SparqlClient initialized!')
         const query = SELECT`*`.WHERE`
         ?subject a ${this.IRRIG.Tree};
@@ -55,6 +55,38 @@ export default class SparqlHandler {
         ?location ${this.GEO.asWKT} ?wkt`
         .build()
         const bindingsStream = this.client.query.select(query)
+        return bindingsStream
+    }
+
+    static getMapDeviceData() {
+        
+        if(!this.client) throw Error('No SparqlClient initialized!')
+        const query = CONSTRUCT`
+        ?sensor a ${this.SAREF.Sensor};
+        ${this.RDFS.label} ?label;
+        ${this.GEO.hasLocation} ?location;
+        <http://www.w3.org/ns/ssn/systems/hasSystemCapability>  ?capabilities.
+        ?capabilities <http://www.w3.org/ns/ssn/systems/hasSystemProperty>  ?system_property.
+        ?system_property ?p ?o.
+        ?sensor ${this.GEO.hasCoverage} ?spatial_coverage.
+        ?sensor ${this.RDFS.comment} ?comment
+        `.WHERE`
+        ?sensor a ${this.SAREF.Sensor};
+    	    ${this.RDFS.label} ?label;
+            ${this.GEO.hasGeometry}/${this.GEO.asWKT} ?location;
+            <http://www.w3.org/ns/ssn/systems/hasSystemCapability> ?capabilities.
+        ?capabilities <http://www.w3.org/ns/ssn/systems/hasSystemProperty> ?system_property.
+        ?system_property ?p ?o.
+        FILTER NOT EXISTS {?system_property ${this.RDF.type} ?o}
+        OPTIONAL{
+            ?system_property ${this.GEO.hasGeometry}/${this.GEO.asWKT} ?spatial_coverage.
+        }
+        OPTIONAL {
+            ?sensor ${this.RDFS.comment} ?comment
+        }`
+        .build()
+        console.log(query)
+        const bindingsStream = this.client.query.construct(query)
         return bindingsStream
     }
 
@@ -70,6 +102,22 @@ export default class SparqlHandler {
         this.setEndpoint(endpointUrl)
         this.client = new SparqlClient({endpointUrl})
     }
+
+    static getNamespaceObject(q:string):{namespace:string, value:string}{
+        console.dir(q)
+        if(q.includes('#')){
+            return {
+                namespace: `${q.split('#').at(0)}#`,
+                value: `${q.split('#').at(1)}`
+            }
+        } else {
+            return {
+                namespace:`${(q.split('/').slice(0, -1)).join('/')}`,
+                value:`${q.split('/').pop()}`
+            }
+        }
+      }
+      
 
     
     private static validUrl = (url:string)=> {

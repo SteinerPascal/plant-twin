@@ -23,6 +23,8 @@ import CreateIcon from '@mui/icons-material/Create';
 import ForceGraph from "../../../graph-visualizer/ForceGraph";
 import ForceGarphErrorBoundary from "../../../graph-visualizer/ForceGraphErrorBoundary";
 import { useState } from "react";
+import SparqlHandler from "../../../SparqlHandler";
+import { DataFactory } from "n3";
 
 
 export default function Form(props) {
@@ -304,7 +306,17 @@ export function InvokeForm(props) {
     let openFab = false
     const [affordanceGraph,renderGraph] = useState(<div></div>)
     const explainAffordance = (props) => {
-        renderGraph( <ForceGraph openFab={true} subject={props?.attributes?.find(a=>{return a?.key === "@type"})?.props?.children[2]}/>)
+        let subject = props?.attributes?.find(a=>{return a?.key === "@type"})?.props?.children[2]
+        subject = subject.replaceAll('"','')
+        const prefix = subject.split(':').at(0)
+       // see if it has prefix e.g sosa:Thing
+        let iri
+        if(prefix){
+            iri = DataFactory.namedNode(`${SparqlHandler.ns.get(prefix)}#${subject.split(':').at(1)}`)
+        } else {
+            iri = DataFactory.namedNode(subject)
+        } 
+        renderGraph( <ForceGraph openFab={true} subject={iri} resultStream={SparqlHandler.explainActuation(iri)}/>)
     }
     return (
         <div className="flex flex-row items-center justify-start h-10 w-full bg-formRed rounded-md px-4 mt-2 bg-opacity-75 border-2 border-formRed">

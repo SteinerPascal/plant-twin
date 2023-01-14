@@ -3,8 +3,8 @@ import { Literal, NamedNode } from "n3"
 import { Dispatch, SetStateAction } from "react"
 import { wktToGeoJson } from "../sparnaturalmanager/yasgui/plugins/map-plugin/wktParsing"
 import SparqlHandler from "../SparqlHandler"
-import markersvg from "./markersvg"
-import LeafletModal from "./LeafletModal"
+import  { treeMarker } from "./markersvg"
+import LeafletModal from "./TreeModal"
 
 
 
@@ -15,7 +15,7 @@ const createMarker = (feature: Point, popUpString:JSX.Element, index:number,onSu
       iconColor: "green",
       onClick:modalOpen,
       position: [ feature.coordinates[1], feature.coordinates[0]],
-      customIcon:markersvg
+      customIcon:treeMarker
     }
 
     function modalOpen(){
@@ -36,7 +36,7 @@ const createModalObj = (row:any):JSX.Element => {
 }
 
 export const getTrees = (addData: Dispatch<SetStateAction<JSX.Element[]>>,onSubjectClick:(subj:JSX.Element)=>void)=>{
-  SparqlHandler.getMapData().then(stream=>{
+  SparqlHandler.getMapTreeData().then(stream=>{
     let rowIndex = 0
     const geometries:Array<any> = []
     stream.on('data',(row)=>{

@@ -1,4 +1,4 @@
-import { NamedNode, Quad_Object, Quad_Predicate, Quad_Subject, Store } from "n3"
+import { NamedNode, Quad, Quad_Object, Quad_Predicate, Quad_Subject, Store } from "n3"
 interface INode {
     id:number,name:string,group:string
 }
@@ -14,8 +14,7 @@ export interface ID3Js {
     links:Array<ILink>
 }
 
-const convertToD3 = (subject:NamedNode,store:Store)=>{
-    const quads = store.getQuads(subject,null,null,new NamedNode('http://twin/forceGraph/'))
+const convertToD3 = (quads:Quad[])=>{
     const nodes = new Map<string,INode>()
     const d3DataSet:ID3JsInternal = {
         nodes: new Set(),

@@ -5,33 +5,20 @@ import convertToD3 from "./quad2D3";
 import ActionModal from "../digital-twin/circularmenu/ActionModal";
 import GraphComponent from "./GraphComponent";
 import SparqlHandler from "../SparqlHandler";
+import internal, { Stream } from "stream";
 
 
-export default function ForceGraph({subject,openFab}:{subject:string,openFab:boolean}){
+export default function ForceGraph({iri,openFab,resultStream}:{iri:string,openFab:boolean,resultStream:Promise<Stream & internal.Readable>}){
     const [open, onFabOpen] = useState(openFab);
-    console.log(`subject received: ${subject}`)
+    console.log(`subject received: ${iri}`)
     const [graphModal,renderGraphModal] = useState(<div>Loading Graph</div>)
-    console.log('here')
     //const [dataSet,setDataSet] = useState<null|ID3Js>(null)
-
-    
     const handleClose = () =>{
         onFabOpen(false)
     } ;
 
 
     useEffect(() => {
-        if(!subject) return renderGraphModal(<div>No subject loaded</div>)
-        subject = subject.replaceAll('"','')
-        const prefix = subject.split(':').at(0)
-       // see if it has prefix e.g sosa:Thing
-        let iri:NamedNode
-        if(prefix){
-            iri = DataFactory.namedNode(`${SparqlHandler.ns.get(prefix)}#${subject.split(':').at(1)}`)
-        } else {
-            iri = DataFactory.namedNode(subject)
-        } 
-        const resultStream = SparqlHandler.explainActuation(iri)
         resultStream.then(result =>{     
           result.on('data',(binding:Quad)=>{
             console.log('add data')
@@ -40,13 +27,13 @@ export default function ForceGraph({subject,openFab}:{subject:string,openFab:boo
           })
           result.on('end',()=>{
             console.log('set data')
-            let dataSet = convertToD3(iri,SparqlHandler.rdfStore)
+            let dataSet = convertToD3(SparqlHandler.rdfStore.getQuads(iri,null,null,new NamedNode('http://twin/forceGraph/')))
             if(dataSet)
             renderGraphModal(<ActionModal open={open} handleClose={handleClose } actionEl={<GraphComponent dataSet={dataSet}/>} />)
           })
         })
     
-      }, [subject])
+      }, [iri])
 
     return(
         <div>

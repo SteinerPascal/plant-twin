@@ -16,7 +16,6 @@ function App() {
         <Route path="/twin/*" element={<Twin endpointUrl={endpointUrl}/>} />
         <Route path='/tdeditor/*' element={<TdEditor endpointUrl={endpointUrl}/>} />
         <Route path='/mapviewer/*' element={<LeafletContainer />} />
-
       </Routes>
   );
 }
