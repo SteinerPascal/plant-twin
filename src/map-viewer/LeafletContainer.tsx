@@ -12,6 +12,7 @@ import { getDevices } from './devicedatasource';
 export default function LeafletContainer(){
   const [treeData,addTreeData] = useState<Array<JSX.Element>>([])
   const [deviceData,addDeviceData] = useState<Array<JSX.Element>>([])
+  const [mapData,addMapData] = useState<Array<JSX.Element>>([])
   const [actionEl, setActionEl] = useState(<div></div>)
   const [open, onModalOpen] = useState(false);
   const handleClose = () =>{
@@ -27,8 +28,10 @@ export default function LeafletContainer(){
   useEffect(() => {
     getTrees(addTreeData,onSubjectClick)
     getDevices(addDeviceData,onSubjectClick)
+    addMapData([...treeData,...deviceData])
+
     },[])
-//<PixiOverlay markers={treeData as any} />
+//<PixiOverlay markers={deviceData as any}/>
   return(
     <Layout>
         <ActionModal open={open} handleClose={handleClose} actionEl={actionEl}></ActionModal>
@@ -37,8 +40,8 @@ export default function LeafletContainer(){
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <PixiOverlay markers={(treeData.concat(deviceData))as any} />
           
-          <PixiOverlay markers={deviceData as any}/>
         </MapContainer>
     </Layout>
 

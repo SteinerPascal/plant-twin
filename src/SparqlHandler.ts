@@ -104,7 +104,6 @@ export default class SparqlHandler {
     }
 
     static getNamespaceObject(q:string):{namespace:string, value:string}{
-        console.dir(q)
         if(q.includes('#')){
             return {
                 namespace: `${q.split('#').at(0)}#`,
@@ -116,7 +115,7 @@ export default class SparqlHandler {
                 value:`${q.split('/').pop()}`
             }
         }
-      }
+    }
       
 
     

@@ -37,11 +37,11 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
       svg.append('defs').append('marker')
       .attr("id",'arrowhead')
       .attr('viewBox','-0 -5 10 10') //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
-       .attr('refX',10) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
+       .attr('refX',22) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
        .attr('refY',0)
        .attr('orient','auto')
-          .attr('markerWidth',13)
-          .attr('markerHeight',13)
+          .attr('markerWidth',8)
+          .attr('markerHeight',8)
           .attr('xoverflow','visible')
       .append('svg:path')
       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
@@ -79,10 +79,9 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
           .enter()
           .append('text')
           .style("pointer-events", "none")
-          .style('margin',4)
           .attr('class', 'edgelabel')
           .attr('id', function (d, i) {return 'edgelabel' + i})
-          .attr('font-size', 8)
+          .attr('font-size', 12)
           .attr('fill', '#000000');
   
       edgelabels.append('textPath') //To render text along the shape of a <path>, enclose the text in a <textPath> element that has an href attribute with a reference to the <path> element.
@@ -146,7 +145,7 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
 
       node.append("text")
       .attr("dy", 4)
-      .attr("dx", -12)
+      .attr("dx", -6)
       .attr('font-size', 10)
       .html((d:any)=>{
         let newText = '';
@@ -154,18 +153,21 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
         let chunk = 0;
 
         for(let i=0;name.length -1;i++){
-          let step = Math.floor(i/7)
+          let step = Math.floor(i/13)
           let x = 0 // otherwise there is a line intendation of 12px
-          if(step>1) x=-12 
+          let y = 0
+          if(step>1){
+            x= -6 ; y =13
+          } 
           if(step > chunk){
-            newText = `${newText}  <tspan x="${x}px" dy="13px">${name.splice(Math.max(0, chunk-1),(step * 7)).join('')}</tspan>`
+            newText = `${newText}  <tspan x="${x}px" dy="${y}px">${name.splice(Math.max(0, chunk-1),(step + 13)).join('')}</tspan>`
             chunk = step
           }
-          if( name.length - (step * 7) < 7){
-            newText = `${newText}  <tspan x="${x}px" dy="13px">${name.splice(chunk-1,name.length - 1).join('')}</tspan> `
+          if( name.length - (step + 7) < 13){
+            if(step === 1) y=13
+            newText = `${newText}  <tspan x="${x}px" dy="${y}px">${name.splice(chunk-1,name.length - 1).join('')}</tspan> `
             break
           }
-
         }
         return newText
       })
@@ -179,7 +181,6 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
 
       // This function is run at each iteration of the force algorithm, updating the nodes position (the nodes data array is directly manipulated).
       function ticked() {
-        console.log('TICKED CALLED')
         link.attr("x1", (d:any) => d.source.x)
         .attr("y1", (d:any) => d.source.y)
         .attr("x2", (d:any) => d.target.x)
@@ -194,8 +195,4 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
     return(
         <div className="rdf-graph" ref={graph}></div>  
     )
-}
-
-function xScale(arg0: any) {
-  throw new Error("Function not implemented.");
 }
