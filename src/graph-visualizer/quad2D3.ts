@@ -1,14 +1,18 @@
-import { NamedNode, Quad, Quad_Object, Quad_Predicate, Quad_Subject, Store } from "n3"
+import { Quad, Quad_Object, Quad_Predicate, Quad_Subject } from "n3"
+import SparqlHandler from "../SparqlHandler"
+
 interface INode {
-    id:number,name:string,group:string
+    id:number,name:string,termType:string,prefix:string
 }
 interface ILink {
-    source:number,target:number, type:string
+    source:number,target:number, name:string, prefix:string
 }
+// uses Sets for easy converting of data
 interface ID3JsInternal {
     nodes:Set<INode>
     links:Set<ILink>
 }
+// outside interface
 export interface ID3Js {
     nodes:Array<INode>
     links:Array<ILink>
@@ -28,10 +32,12 @@ const convertToD3 = (quads:Quad[])=>{
                 const n =  nodes.get(term.value)
                 if(n) node = n
             } else {
+                const nsObj = SparqlHandler.getNamespaceObject(term.value)
                 node = {
                     id: counter++,
-                    name:term.value,
-                    group:term.termType
+                    name:nsObj.value,
+                    termType:term.termType,
+                    prefix: nsObj.namespace
                 }
                 nodes.set(term.value,node)
             }
@@ -41,10 +47,12 @@ const convertToD3 = (quads:Quad[])=>{
 
     const addLink = (pred: Quad_Predicate,nodeSubj:INode,nodeObj:INode):ILink | null=>{
         if(pred.termType === "Variable") return null
+        const nsObj = SparqlHandler.getNamespaceObject(pred.value)
         return {
             source:nodeSubj.id,
             target:nodeObj.id,
-            type:pred.value
+            name:nsObj.value,
+            prefix:nsObj.namespace
         }
     }
 

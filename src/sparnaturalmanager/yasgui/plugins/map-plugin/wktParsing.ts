@@ -10,7 +10,7 @@ export const wktToGeoJson = (literal:string): Geometry =>{
     const stringParts = literal.split(' ').filter((subStr)=> subStr !== " ")
     // look for either Point or Polygon string
     let featureType = stringParts.find((string)=>{
-        return string.includes('Polygon') || string.includes('Point') || string.includes('Polyline')
+        return string.includes('Polygon') || string.includes('POLYLINE')|| string.includes('POINT') || string.includes('Point') || string.includes('Polyline')
     })
     if(!featureType) throw Error(`The parsing function couldn't find substring "Polygon" or "Point" in wktLiteral: ${literal}`)
 

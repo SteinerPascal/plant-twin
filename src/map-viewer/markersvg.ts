@@ -12,7 +12,7 @@ export const treeMarker =
 </svg>`
 
 export const deviceMarker = 
-`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#1fad25" version="1.1" id="Capa_1" width="800px" height="800px" viewBox="0 0 595.021 595.021" xml:space="preserve">
+`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#1fad25" version="1.1" id="Capa_1" width="11px" height="11px" viewBox="0 0 595.021 595.021" xml:space="preserve">
 <g>
 	<g>
 		<g>

@@ -4,8 +4,13 @@ import { ID3Js } from "./quad2D3";
 
 //https://observablehq.com/@xianwu/force-directed-graph-network-graph-with-arrowheads-and-lab
 // https://www.d3indepth.com/force-layout/
+//https://stackoverflow.com/questions/63693132/unable-to-get-node-datum-on-mouseover-in-d3-v6/63693424#63693424
 export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
     const graph = useRef<HTMLDivElement>(null);
+    const colorScale = d3.scaleOrdinal() //=d3.scaleOrdinal(d3.schemeSet2)
+    .domain(dataSet.nodes.map(n=>n.prefix))
+    .range(['#ff9e6d', '#86cbff', '#c2e5a0','#fff686','#9e79db','#6e7b8b','#d9534f','#e5c9b9','#bcd2ee'])
+
     useEffect(() => {
       console.log('graphcomponent')
       console.dir(dataSet)
@@ -17,19 +22,22 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
         bottom: 5,
         left: 5
       }
-      let width = 705
-      let height = 565
+      let width = 905
+      let height = 765
 
       const svg = d3.select(graph.current).append("svg")
       .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
+          .call(d3.zoom().on("zoom", function (event:any) {
+            svg.attr("transform", event.transform)
+         }) as any)
       .append("g")
           .attr("transform", `translate(${margin.left},${margin.top})`);
 
       svg.append('defs').append('marker')
       .attr("id",'arrowhead')
       .attr('viewBox','-0 -5 10 10') //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
-       .attr('refX',16) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
+       .attr('refX',10) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
        .attr('refY',0)
        .attr('orient','auto')
           .attr('markerWidth',13)
@@ -54,7 +62,7 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
       //The <title> element provides an accessible, short-text description of any SVG container element or graphics element.
   //Text in a <title> element is not rendered as part of the graphic, but browsers usually display it as a tooltip.
   link.append("title")
-  .text(d => d.type);
+  .text(d => d.name);
   
       const edgepaths = svg.selectAll(".edgepath") //make path go along with the link provide position for link labels
           .data(dataSet.links)
@@ -71,17 +79,18 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
           .enter()
           .append('text')
           .style("pointer-events", "none")
+          .style('margin',4)
           .attr('class', 'edgelabel')
           .attr('id', function (d, i) {return 'edgelabel' + i})
-          .attr('font-size', 10)
-          .attr('fill', '#aaa');
+          .attr('font-size', 8)
+          .attr('fill', '#000000');
   
       edgelabels.append('textPath') //To render text along the shape of a <path>, enclose the text in a <textPath> element that has an href attribute with a reference to the <path> element.
       .attr('xlink:href', function (d, i) {return '#edgepath' + i})
       .style("text-anchor", "middle")
       .style("pointer-events", "none")
       .attr("startOffset", "50%")
-      .text(d => d.type);
+      .text(d => d.name);
   
       //const width = +svg.attr("width");
       //const height = +svg.attr("height");
@@ -117,6 +126,7 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
             .on("drag", dragged)
             //.on("end", dragended);
         }
+      
       const node = svg.selectAll(".nodes")
       .data(dataSet.nodes as any)
       .enter()
@@ -126,19 +136,40 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
   
       node.append("title")
       .text((d:any) => d.id + ": " + d.name + " - " + d.group)
-  
-      node.append("text")
-      .attr("dy", 4)
-      .attr("dx", -15)
-      .text((d:any) => d.name);
-
       node.append("circle")
-      .attr("r", d=> 17)//+ d.runtime/20 )
+      .attr("r", d=> 20)//+ d.runtime/20 )
       .style("stroke", "grey")
       .style("stroke-opacity",0.3)
       .style("stroke-width", (d:any) => d.runtime/10)
       .style("fill", "#f5b042")
+      .style("fill", (d:any) => colorScale(d.prefix)as string)
 
+      node.append("text")
+      .attr("dy", 4)
+      .attr("dx", -12)
+      .attr('font-size', 10)
+      .html((d:any)=>{
+        let newText = '';
+        let name = d.name.split('');
+        let chunk = 0;
+
+        for(let i=0;name.length -1;i++){
+          let step = Math.floor(i/7)
+          let x = 0 // otherwise there is a line intendation of 12px
+          if(step>1) x=-12 
+          if(step > chunk){
+            newText = `${newText}  <tspan x="${x}px" dy="13px">${name.splice(Math.max(0, chunk-1),(step * 7)).join('')}</tspan>`
+            chunk = step
+          }
+          if( name.length - (step * 7) < 7){
+            newText = `${newText}  <tspan x="${x}px" dy="13px">${name.splice(chunk-1,name.length - 1).join('')}</tspan> `
+            break
+          }
+
+        }
+        return newText
+      })
+     
       simulation
       .nodes(dataSet.nodes as any)
       .on("tick", ticked);
@@ -160,10 +191,11 @@ export default function GraphComponent({dataSet}:{dataSet:ID3Js}) {
       }
     })
    
-
-
-
     return(
         <div className="rdf-graph" ref={graph}></div>  
     )
+}
+
+function xScale(arg0: any) {
+  throw new Error("Function not implemented.");
 }

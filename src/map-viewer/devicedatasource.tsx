@@ -64,6 +64,7 @@ export const getDevices = (addData: Dispatch<SetStateAction<JSX.Element[]>>,onSu
             
             const graph = getDeviceQuads(d,mapDeviceGraph)
             const modal = createModalObj(graph)
+            console.dir(locations)
             const geometry = wktToGeoJson(locations[0].value)
             if(geometry.type === "Point"){
                 console.log('createmarker')
