@@ -38,12 +38,13 @@ const CircularMenu = ({subject,endpointUrl,twinStore}:{subject:string,endpointUr
       angle += dangle;
       const style = {
         transform:`rotate(${angle}deg) translate(${cyclegraph.clientWidth /
-        2}px) rotate(-${angle}deg)`
+        1.6}px) rotate(-${angle}deg)`
       }
-      console.log('proooops')
-      console.dir(el.props)
+      const quad = el.props.quad
       return <div>
-        <p style={{position:'absolute',left:'-20px',top:'-40px', color:"white", width:'max-content'}}>{`${getWithoutNamespace(q.predicate.value)} => ${getWithoutNamespace(q.object.value)}`}</p>
+        <p className='text' style={{ transform:`rotate(${angle}deg) translate(${cyclegraph.clientWidth / 2.9}px)`, color:"white", width:'max-content'}}>
+            {`${getWithoutNamespace(quad.predicate.value)} => ${getWithoutNamespace(quad.object.value)}`}
+        </p>
         <div key={angle} style={style} className='circle' >{el}</div>
       </div>
       
@@ -63,7 +64,6 @@ const CircularMenu = ({subject,endpointUrl,twinStore}:{subject:string,endpointUr
  
   useEffect(() => {
     const fetchPlugins = ()=>{
-    
       // gets all the quads in the store
       const quadSet = twinStore.getQuads(subject,null,null,null)
       const elements:Array<JSX.Element> = quadSet.map((q:Quad)=>{  
