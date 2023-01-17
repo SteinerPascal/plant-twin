@@ -38,7 +38,7 @@ const Twin = ({endpointUrl}:{endpointUrl:string}) => {
     const resultStream = SparqlHandler.describeTwin(DataFactory.namedNode(subject))
     resultStream.then(result =>{      
       result.on('data',(binding)=>{
-        SparqlHandler.rdfStore.add(binding as Quad) // result comes in RDF/JS Quad
+        SparqlHandler.rdfStore.add(new Quad(binding.subject,binding.predicate,binding.object,undefined)) // result comes in RDF/JS Quad
       })
       result.on('end',()=>{
         renderMenu(<CircularMenu subject= {subject} endpointUrl={endpointUrl} twinStore={SparqlHandler.rdfStore}></CircularMenu>)
@@ -50,7 +50,6 @@ const Twin = ({endpointUrl}:{endpointUrl:string}) => {
   return (
     <Layout>
       <BackGround></BackGround>
-      <h1 style={{color:"white", fontSize:"25px"}}>Digital Twin UI for {subject}</h1>
       { menu }
     </Layout>
   );

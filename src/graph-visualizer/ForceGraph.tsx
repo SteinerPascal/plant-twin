@@ -21,8 +21,6 @@ export default function ForceGraph({iri,openFab,resultStream}:{iri:string,openFa
     useEffect(() => {
         resultStream.then(result =>{     
           result.on('data',(binding:Quad)=>{
-            console.log('add data')
-            console.dir(binding)
             SparqlHandler.rdfStore.add(new Quad(binding.subject,binding.predicate,binding.object,new NamedNode("http://twin/forceGraph/"))) // result comes in RDF/JS Quad
           })
           result.on('end',()=>{

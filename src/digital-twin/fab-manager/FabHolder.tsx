@@ -52,13 +52,9 @@ export const FabHolder = ({endpointUrl, quad, store, actionHandler}:{endpointUrl
         
       }
 
-    const getWithoutNamespace = (iri:string)=>{
-        if(iri.includes('#')) return iri.split('#').at(-1)
-        return iri.split('/').at(-1)
-    }
+
     return(
         <div>
-            <p style={{position:'absolute',left:'-20px',top:'-40px', color:"white", width:'max-content'}}>{`${getWithoutNamespace(quad.predicate.value)} => ${getWithoutNamespace(quad.object.value)}`}</p>
             <Planet
                 centerContent={<CustomBtn icon={renderFabIcon()}/>}
                 hideOrbit

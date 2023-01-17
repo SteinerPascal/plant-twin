@@ -12,7 +12,7 @@ import { getDevices } from './devicedatasource';
 export default function LeafletContainer(){
   const [treeData,addTreeData] = useState<Array<JSX.Element>>([])
   const [deviceData,addDeviceData] = useState<Array<JSX.Element>>([])
-  const [mapData,addMapData] = useState<Array<JSX.Element>>([])
+
   const [actionEl, setActionEl] = useState(<div></div>)
   const [open, onModalOpen] = useState(false);
   const handleClose = () =>{
@@ -28,8 +28,6 @@ export default function LeafletContainer(){
   useEffect(() => {
     getTrees(addTreeData,onSubjectClick)
     getDevices(addDeviceData,onSubjectClick)
-    addMapData([...treeData,...deviceData])
-
     },[])
 //<PixiOverlay markers={deviceData as any}/>
   return(

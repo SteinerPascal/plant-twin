@@ -12,6 +12,8 @@ export default class SparqlHandler {
     static RDF = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     static RDFS = namespace('http://www.w3.org/2000/01/rdf-schema#')
     static SOSA = namespace('http://www.w3.org/ns/sosa/')
+    static SSN = namespace('http://www.w3.org/ns/ssn/')
+    static CASO = namespace('http://www.w3id.org/def/caso#')
     static IRRIG = namespace('http://www.w3id.org/def/irrig#')
     static GEO = namespace('http://www.opengis.net/ont/geosparql#')
     static SKOS = namespace('http://www.w3.org/2004/02/skos/core#')
@@ -30,9 +32,28 @@ export default class SparqlHandler {
     static describeTwin(twinIRI:NamedNode) {
         if(!this.client) throw Error('No SparqlClient initialized!')
         if(!this.validUrl(twinIRI.value)) throw Error(`Passed parameter ${twinIRI} is not a valid IRI`)
-        const query = CONSTRUCT`${twinIRI} ?p ?o. ?o ${this.RDF.type} ?type`.WHERE`${twinIRI} ?p ?o. OPTIONAL{?o ${this.RDF.type} ?type}`.build()
-        console.log(query)
+        const query = CONSTRUCT`${twinIRI} ?p ?o. ?o ${this.RDF.type} ?type`.WHERE`
+        ${twinIRI} ?p ?o. FILTER(${twinIRI} != ?o)
+        FILTER (!isBlank(?o)) 
+        FILTER NOT EXISTS{${twinIRI} ${this.RDF.type} ?o.} 
+        FILTER NOT EXISTS{${twinIRI} ${this.SSN.hasProperty} ?o.}
+        FILTER NOT EXISTS{${twinIRI} ${this.SOSA.isFeatureOfInterestOf} ?o}
+        OPTIONAL{?o ${this.RDF.type} ?type}`.build()
         const bindingsStream = this.client.query.construct(query)
+        return bindingsStream
+    }
+
+    static getTwinState(twinIRI:NamedNode){
+        if(!this.client) throw Error('No SparqlClient initialized!')
+        if(!this.validUrl(twinIRI.value)) throw Error(`Passed parameter ${twinIRI} is not a valid IRI`)
+        const query = SELECT`?propLbl ?deductionLbl ?stateLbl`.
+        WHERE`?deduction a ${this.CASO.Deduction}; 
+            ${this.SOSA.hasFeatureOfInterest} ${twinIRI}; 
+            ${this.SOSA.observedProperty}/${this.RDFS.label} ?propLbl;
+            ${this.CASO.hasResultState}/${this.RDFS.label} ?stateLbl. 
+        `.build()
+        console.dir(query)
+        const bindingsStream = this.client.query.select(query)
         return bindingsStream
     }
 
