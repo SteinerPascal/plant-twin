@@ -37,7 +37,6 @@ export const getTrees = (addData: Dispatch<SetStateAction<JSX.Element[]>>,onSubj
     let rowIndex = 0
     const geometries:Array<any> = []
     stream.on('data',(row)=>{
-      if (row['subject'].value !== "http://twin-example/zurich#tree_29838")return
       Object.entries(row).forEach(([key, value]) => {
         const val = value as NamedNode | Literal
 

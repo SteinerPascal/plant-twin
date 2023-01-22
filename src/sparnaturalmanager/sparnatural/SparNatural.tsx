@@ -23,14 +23,13 @@ const Sparnatural =({tab}:{tab:Tab | null}) => {
       config: config,
       //language:lang,
       onQueryUpdated: function(queryString:string, queryJson:any, specProvider:any) {
-        queryString = semanticPostProcess(queryString, queryJson);
         queryString = specProvider.expandSparql(queryString);
+        queryString = semanticPostProcess(queryString, queryJson);
         tab?.getYasqe()?.setValue(queryString)
         tab?.getYasqe()?.addPrefixes({"gn": "http://www.geonames.org/ontology#"})
 
       },
       sparqlPrefixes:{
-        "geo": "http://www.opengis.net/ont/geosparql#",
         "gn": "http://www.geonames.org/ontology#"
       }
     }

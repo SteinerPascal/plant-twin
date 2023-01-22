@@ -26,9 +26,9 @@ const BackGround = () => {
         autoPlay:true,
         background: {
           color: {
-            value: "#000000"
+            value: "#c3bf97"
           },
-          image: "radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)",
+         
           position: "50% 50%",
           repeat: "no-repeat",
           size: "cover",

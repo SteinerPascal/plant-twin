@@ -7,6 +7,7 @@ import MemoryIcon from '@mui/icons-material/Memory';
 import LeafIcon from './LeafIcon';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import TranslateIcon from '@mui/icons-material/Translate';
+import SvgIcon from '@mui/material/SvgIcon';
 
 export default class MuiIconMatcher{
     private static btnStyle = {fontSize:'40px',color:"white"}
@@ -76,7 +77,7 @@ export default class MuiIconMatcher{
     }
 
     static getDefaultTwinIcon(){
-        return this.defaultTwinIcon
+        return <LeafIcon/>
     }
     static getDefaultBtnIcon(){
         return this.defaultBtnIcon

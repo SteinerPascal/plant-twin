@@ -2,8 +2,7 @@
     position: relative;
     width: 700px;
     height: 700px;
-    margin: 5%;
-    margin-left: 25%;
+    margin-left: 10%;
   }
   
   .cyclegraph:before {
@@ -18,14 +17,13 @@
   
   .cyclegraph .circle {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 65%;
+    left: 65%;
     //background: teal;
     border-radius: 50%;
   }
   .cyclegraph .text {
     position: absolute;
-    top: 60%;
-    left: 43%;
-    margin: calc(-100px / 2);
+    top: 70%;
+    left: 63%;
   }

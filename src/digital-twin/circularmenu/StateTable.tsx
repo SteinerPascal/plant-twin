@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,46 +5,63 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useState } from 'react';
-import { Literal } from 'n3';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import IconButton from '@mui/material/IconButton';
+import { Literal, NamedNode } from 'n3';
 
 export interface StateRow{
-    propertyLbl:Literal,
-    deductionLbl:Literal,
-    stateLbl:Literal
-    
+  foi:NamedNode,
+  deduction:NamedNode,
+  propLbl:Literal,
+  stateLbl:Literal,
+  goalStateLbl:Literal
+  sensor:Literal
 }
 
-export default function StateTable({stateData}:{stateData:Array<StateRow>}) {
-    const [states, addStateData] = useState<Array<StateRow>>(stateData)
-    console.log('states')
-    console.dir(stateData)
+export default function StateTable({stateData,actionHandler}:{stateData:Array<StateRow>,actionHandler:(event:any)=>void}) {
+    const actionNeeded = (currentState:string,goalState:string,deduction:string,foi:string)=>{
+      if(goalState === "No goal state defined" || currentState === goalState ){
+        return <CheckCircleOutlineIcon sx={{ color: '#66ff66', opacity:1}} />
+      }
+      return <IconButton value={JSON.stringify({deduction:deduction,foi:foi})} onClick={actionHandler} aria-label="delete">
+      <WarningAmberIcon sx={{ color: 'red' }} />
+    </IconButton>
+    }
+  const cellStyle = {color:'white'}
+
   return (
-    <TableContainer component={Paper}>
-    <Table sx={{ minWidth: 550 }} aria-label="simple table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Property</TableCell>
-          <TableCell align="right">Deduction</TableCell>
-          <TableCell align="right">State</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        
-        {stateData.map((row) => (
-          <TableRow
-            key={row.propertyLbl?.value}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-          >
-            <TableCell component="th" scope="row">
-              {row.propertyLbl?.value}
-            </TableCell>
-            <TableCell align="right">{row.deductionLbl?.value}</TableCell>
-            <TableCell align="right">{row.stateLbl?.value}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
+      <TableContainer sx={{position:'absolute',marginLeft:'22%',marginTop:'88%',minWidth:750}} component={Paper}>
+          <Table sx={{  minWidth: 750, opacity:0.9, background: '#35735E' , borderRadius: '10px'}} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={cellStyle}>Property</TableCell>
+                <TableCell sx={cellStyle} align="left">Current State</TableCell>
+                <TableCell sx={cellStyle} align="left">Goal State</TableCell>
+                <TableCell sx={cellStyle} align="left">Sensor</TableCell>
+                <TableCell sx={cellStyle} align="left">Evaluation</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              
+              {stateData.map((row) => (
+                <TableRow
+                  key={row.propLbl?.value}
+                  sx={{ color:'#A36746','&:last-child td, &:last-child th': { borderRadius: '0 10px 10px 0' } }}
+                >
+                  <TableCell sx={cellStyle} component="th" scope="row">
+                    {row.propLbl?.value}
+                  </TableCell>
+                  <TableCell sx={cellStyle} align="left" component="th" scope="row">
+                    {row.stateLbl?.value}
+                  </TableCell>
+                  <TableCell sx={cellStyle} align="left">{row.goalStateLbl?.value}</TableCell>
+                  <TableCell sx={cellStyle} align="left">{row.sensor?.value}</TableCell>
+                  <TableCell sx={cellStyle} align="left">{actionNeeded(row.stateLbl.value,row.goalStateLbl.value,row.deduction.value,row.foi.value)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>    
   );
 }

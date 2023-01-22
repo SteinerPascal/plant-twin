@@ -10,6 +10,7 @@ export default class SparqlHandler {
     private static client: SparqlClient
     static rdfStore = new Store()
     static RDF = namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    static PROV = namespace('http://www.w3.org/ns/prov#')
     static RDFS = namespace('http://www.w3.org/2000/01/rdf-schema#')
     static SOSA = namespace('http://www.w3.org/ns/sosa/')
     static SSN = namespace('http://www.w3.org/ns/ssn/')
@@ -44,13 +45,83 @@ export default class SparqlHandler {
     }
 
     static getTwinState(twinIRI:NamedNode){
-        if(!this.client) throw Error('No SparqlClient initialized!')
-        if(!this.validUrl(twinIRI.value)) throw Error(`Passed parameter ${twinIRI} is not a valid IRI`)
-        const query = SELECT`?propLbl ?deductionLbl ?stateLbl`.
-        WHERE`?deduction a ${this.CASO.Deduction}; 
-            ${this.SOSA.hasFeatureOfInterest} ${twinIRI}; 
+
+        const query = SELECT`?foi ?deduction ?propLbl ?stateLbl ?goalStateLbl (GROUP_CONCAT(DISTINCT ?sensor; SEPARATOR=", ") as ?sensor)`.WHERE`
+        ?deduction a <http://www.w3id.org/def/caso#Deduction>;
+            ${this.SOSA.hasFeatureOfInterest} ${twinIRI};
+            ${this.SOSA.hasFeatureOfInterest} ?foi;
             ${this.SOSA.observedProperty}/${this.RDFS.label} ?propLbl;
-            ${this.CASO.hasResultState}/${this.RDFS.label} ?stateLbl. 
+            <http://www.w3id.org/def/caso#hasResultState> ?resState.
+            ?resState ${this.RDFS.label} ?stateLbl;
+            	^<http://www.w3id.org/def/caso#hasState> ?stateProp.  
+        OPTIONAL{
+            ?deduction ${this.SOSA.hasFeatureOfInterest}/${this.IRRIG.hasGoalState} ?propState.
+            ?propState ${this.RDFS.label} ?lbl;
+                ^<http://www.w3id.org/def/caso#hasState> ?stateProp #must belong to the same prop
+        }
+        BIND(COALESCE(?lbl,"No goal state defined") as ?goalStateLbl)
+        OPTIONAL{
+            ?deduction ${this.PROV.wasInformedBy}/${this.SOSA.madeBySensor}/${this.RDFS.label} ?sensor
+        }
+        `.GROUP().BY('propLbl').THEN.BY('foi').THEN.BY('stateLbl').THEN.BY('goalStateLbl').THEN.BY('deduction').build()
+        console.dir(query)
+        
+        const bindingsStream = this.client.query.select(query)
+        return bindingsStream
+    }
+
+    static getDeductionExplanation(deductionIRI:NamedNode){
+        if(!this.client) throw Error('No SparqlClient initialized!')
+        if(!this.validUrl(deductionIRI.value)) throw Error(`Passed parameter ${deductionIRI.value} is not a valid IRI`)
+        const query = SELECT`?foi ?sensorLbl ?deductionLbl ?resStateLbl`.WHERE`
+        ${deductionIRI} ${this.PROV.wasInformedBy}+ ?deduction.
+        ${deductionIRI} ${this.SOSA.hasFeatureOfInterest} ?foi
+        {
+            ?deduction a ${this.SOSA.Observation}.
+            ${deductionIRI} ${this.RDFS.label} ?deductionLbl.
+            ?deduction ${this.PROV.wasInformedBy}/${this.SOSA.madeBySensor}/${this.RDFS.label} ?sensorLbl.
+            ${deductionIRI} <http://www.w3id.org/def/caso#hasResultState> ?resState.
+            ?resState ${this.RDFS.label} ?resStateLbl
+        } UNION {
+            ?deduction a <http://www.w3id.org/def/caso#:Deduction>.
+            ?deduction ${this.RDFS.label} ?deductionLbl.
+            ?deduction ${this.PROV.wasInformedBy}/${this.SOSA.madeBySensor}/${this.RDFS.label} ?sensorLbl.
+            ?deduction <http://www.w3id.org/def/caso#hasResultState> ?resState.
+            ?resState ${this.RDFS.label} ?resStateLbl
+        }`.build()
+        console.log(query)
+        const bindingsStream = this.client.query.select(query)
+        return bindingsStream
+    }
+
+    static getProcessRecommendation(waterNeedDed:NamedNode){
+        if(!this.client) throw Error('No SparqlClient initialized!')
+        if(!this.validUrl(waterNeedDed.value)) throw Error(`Passed parameter ${waterNeedDed.value} is not a valid IRI`)
+        const query = SELECT`?device ?deviceLbl ?deviceDesc ?aaLbl ?aaDesc ?procedure ?procedureLbl ?resState ?goalState`.WHERE`
+            ${waterNeedDed} ${this.PROV.wasInformedBy}+ ?deduction.
+            ?deduction a <http://www.w3id.org/def/caso#Deduction>;
+                ${this.SOSA.hasFeatureOfInterest} ?foi;
+                <http://www.w3id.org/def/caso#hasResultState> ?resState.
+                ?resState ^<http://www.w3id.org/def/caso#hasState> ?stateProp.
+                ?foi <http://www.w3id.org/def/irrig#hasGoalState> ?goalState.
+                ?goalState ^<http://www.w3id.org/def/caso#hasState> ?stateProp
+                FILTER(?goalState != ?resState)
+            ?procedure a sosa:Procedure.
+            ?procedure ssn:hasInput ?resState.
+            ?procedure ssn:hasOutput ?goalState.
+            ?resState <http://www.w3id.org/def/caso#greaterThan>|<http://www.w3id.org/def/caso#lesserThan> ?goalState.
+            ?procedure rdfs:label ?procedureLbl.
+            ?device a ${this.SAREF.Actuator};
+                <https://www.w3.org/2019/wot/td#title> ?deviceLbl;
+                <https://www.w3.org/2019/wot/td#hasActionAffordance> ?aa.
+            OPTIONAL{
+                    ?device <https://www.w3.org/2019/wot/td#description> ?deviceDesc
+                }
+                ?aa ${this.SSN.implements} ?procedure;
+                    <https://www.w3.org/2019/wot/td#title> ?aaLbl
+            OPTIONAL{
+                ?aa <https://www.w3.org/2019/wot/td#description> ?aaDesc
+            }
         `.build()
         console.dir(query)
         const bindingsStream = this.client.query.select(query)
@@ -80,7 +151,6 @@ export default class SparqlHandler {
     }
 
     static getMapDeviceData() {
-        
         if(!this.client) throw Error('No SparqlClient initialized!')
         const query = CONSTRUCT`
         ?sensor a ${this.SAREF.Sensor};
@@ -89,7 +159,7 @@ export default class SparqlHandler {
         <http://www.w3.org/ns/ssn/systems/hasSystemCapability>  ?capabilities.
         ?capabilities <http://www.w3.org/ns/ssn/systems/hasSystemProperty>  ?system_property.
         ?system_property ?p ?o.
-        ?sensor ${this.GEO.hasCoverage} ?spatial_coverage.
+        ?sensor ${this.GEO.hasSensingRadius} ?spatial_coverage.
         ?sensor ${this.RDFS.comment} ?comment
         `.WHERE`
         ?sensor a ${this.SAREF.Sensor};

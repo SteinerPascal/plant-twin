@@ -124,8 +124,9 @@ export default class MapPlugin implements Plugin<PluginConfig>{
         let rows = this.getRows()
         if(rows && rows.length > 0){
             return rows.some((row: DataRow)=>{ // if a cell contains a geosparql value
-                // Test all rows because of OPTIONAL in SPARQL
-                if(this.getGeosparqlValue(row)) return true
+                if(this.getGeosparqlValue(row)){
+                    return true
+                } 
             })
         }
         return false
@@ -183,7 +184,7 @@ export default class MapPlugin implements Plugin<PluginConfig>{
     }
 
     private drawMarker(feature: Point,colIndex:number, popUpString:string) {
-        const latLng = new L.LatLng(feature.coordinates[0],feature.coordinates[1])
+        const latLng = new L.LatLng(feature.coordinates[1],feature.coordinates[0])
         if(!this.map) throw Error(`Wanted to draw Marker but no map found`)
         let markerOptions:any ={
             icon:markerIcon

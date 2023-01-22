@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
-$sidebar-bg-color: #0c1e35;
+$sidebar-bg-color: #1d314d;
 $submenu-bg-color: rgba(255, 255, 255, 0.05);
 $submenu-bg-color-collapsed: rgba(#0c1e35, 0.95);
 $sidebar-color: #b3b8d4;
@@ -35,6 +35,8 @@ body {
   display: block;
 }
 .app main header {
+  opacity: 0.9;
+  background:#35735E;
   margin-bottom: 20px;
 }
 

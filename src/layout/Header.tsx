@@ -38,7 +38,7 @@ const Header = ({toggled,
     setAnchorEl(null);
   };
   return (
-    <header>
+    <header >
       <Root>
         <AppBar position="static">
           <Toolbar>

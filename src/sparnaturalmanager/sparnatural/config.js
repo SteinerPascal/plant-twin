@@ -58,6 +58,8 @@ export default {
         { "@value": "fr", "@language": "fr" },
       ],
       faIcon: "fa-solid fa-tree",
+      defaultLabelProperty:
+      "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#auto_label"
     },
     {
       "@id": "http://aims.fao.org/aos/agrovoc/c_5630",
@@ -67,6 +69,8 @@ export default {
         { "@value": "Pathogen", "@language": "fr" },
       ],
       faIcon: "fas fa-bug",
+      defaultLabelProperty:
+        "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#auto_label"
     },
     {
       "@id": "http://www.w3.org/ns/sosa/Sensor",
@@ -118,7 +122,7 @@ export default {
       faIcon: "fa-solid fa-map-pin"
     },
     {
-      "@id":"http://twin-example/geneva#AgrovocTerm",
+      "@id":"http://twin-example/zurich#AgrovocTerm",
       "@type": "Class",
       label: [
         { "@value": "Tree type", "@language": "en" },
@@ -136,7 +140,7 @@ export default {
       faIcon: "fa-solid fa-star-shooting"
     },
     {
-      "@id":"http://twin-example/geneva#Location",
+      "@id":"http://twin-example/zurich#Location",
       "@type": "Class",
       subClassOf: "http://www.w3.org/2000/01/rdf-schema#Literal",
       label: [
@@ -144,8 +148,6 @@ export default {
         { "@value": "Location", "@language": "fr" },
       ],
       faIcon: "fas fa-map-marked-alt",
-      defaultLabelProperty:
-      "http://www.opengis.net/ont/geosparql#asWKT",
     },
     {
 
@@ -175,23 +177,25 @@ export default {
       enableNegation: true,
     },
     {
-      "@id": "http://twin-example/geneva#hasAgrovocTerm",
+      "@id": "http://twin-example/zurich#agrovocBroader",
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:ListProperty",
       datasource: {
           queryString: `
-          PREFIX schema: <http://schema.org/>
-          PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-          PREFIX gn: <http://www.geonames.org/ontology#>
           PREFIX agrovoc: <http://aims.fao.org/aos/agrovoc/>
-          PREFIX ex: <http://twin-example/geneva#> 
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX irrig: <http://www.w3id.org/def/irrig#>
+          PREFIX ex: <http://twin-example/zurich#>
+          PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
           select distinct ?uri ?label where {
-              ?tree rdf:type ex:Tree.
-              ?tree ex:hasAgrovocTerm ?agrovocTerm.
-              ?tree rdfs:label ?label.
-              Bind(?agrovocTerm as ?uri)
-          } `,
-          sparqlEndpointUrl:"http://localhost:7200/repositories/geneva-demo"
+              ?tree rdf:type irrig:Tree.
+              ?tree skos:broader ?broad.
+              ?broad skos:prefLabel ?agrovocTerm.
+              ?tree ex:agrovocBroader ?broader
+              BIND(?broader as ?uri)
+              Bind(?agrovocTerm as ?label)
+          }`,
+          sparqlEndpointUrl:"http://localhost:7200/repositories/map-data"
         },
       label: [
         { "@value": "is of Tree type", "@language": "en" },
@@ -208,7 +212,7 @@ export default {
         },
       ],
       domain:"http://www.w3id.org/def/irrig#Tree",
-      range: "http://twin-example/geneva#AgrovocTerm",
+      range: "http://twin-example/zurich#AgrovocTerm",
       enableOptional: true,
       enableNegation: true,
     },
@@ -245,7 +249,7 @@ export default {
         { "@value": "withinArea", "@language": "en" },
         { "@value": "dans la zone", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#Location",
+      domain: "http://twin-example/zurich#Location",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Area"
     },
     {
@@ -275,7 +279,7 @@ export default {
         { "@value": "within canton", "@language": "en" },
         { "@value": "within canton", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#Location",
+      domain: "http://twin-example/zurich#Location",
       range: "http://www.geonames.org/ontology#A.ADM1",
       sparqlString: 'gn:featureCode'
     },
@@ -288,7 +292,7 @@ export default {
         { "@value": "outsideArea", "@language": "en" },
         { "@value": "dehors de la zone", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#Location",
+      domain: "http://twin-example/zurich#Location",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Area"
     },
     {
@@ -297,11 +301,12 @@ export default {
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
-        { "@value": "hasLocation", "@language": "en" },
+        { "@value": "has Location", "@language": "en" },
         { "@value": "dans la zone", "@language": "fr" },
       ],
       domain: "http://www.w3id.org/def/irrig#Tree",
-      range: "http://twin-example/geneva#Location"
+      range: "http://twin-example/zurich#Location",
+      sparqlString: "<http://www.opengis.net/ont/geosparql#hasGeometry>/<http://www.opengis.net/ont/geosparql#asWKT>"
     },
     {
       "@id":
@@ -309,11 +314,11 @@ export default {
       "@type": "ObjectProperty",
       subPropertyOf: "sparnatural:NonSelectableProperty",
       label: [
-        { "@value": "hasLocation", "@language": "en" },
+        { "@value": "has Location", "@language": "en" },
         { "@value": "dans la zone", "@language": "fr" },
       ],
       domain: "http://www.w3.org/ns/sosa/Sensor",
-      range: "http://twin-example/geneva#Location"
+      range: "http://twin-example/zurich#Location",
     },
     {
       "@id":
@@ -325,7 +330,9 @@ export default {
         { "@value": "triggers Action On", "@language": "fr" },
       ],
       domain: "http://www.w3.org/ns/sosa/Sensor",
-      range: "http://www.w3.org/ns/sosa/Actuator"
+      range: "http://www.w3.org/ns/sosa/Actuator",
+      sparqlString: "rdfs:label"
+      
     },
     {
       "@id": "http://aims.fao.org/aos/agrontology#hasPathogen",
@@ -335,7 +342,7 @@ export default {
         { "@value": "has Possible Pathogen", "@language": "en" },
         { "@value": "has Possible Pathogen", "@language": "fr" },
       ],
-      domain: "http://twin-example/geneva#AgrovocTerm",
+      domain: "http://twin-example/zurich#AgrovocTerm",
       range: "http://aims.fao.org/aos/agrovoc/c_5630",
       treeRootsDatasource: {
           queryString: `
@@ -362,22 +369,7 @@ export default {
         { "@value": "name", "@language": "en" },
         { "@value": "nom", "@language": "fr" },
       ],
-      enableOptional: true,
-      sparqlString: "rdfs:label",
-      range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
-    },
-    {
-      "@id":
-        "http://www.opengis.net/ont/geosparql#asWKT",
-      "@type": "ObjectProperty",
-      subPropertyOf: "sparnatural:NonSelectableProperty",
-      label: [
-        { "@value": "name", "@language": "en" },
-        { "@value": "nom", "@language": "fr" },
-      ],
-      enableOptional: true,
-      varName: 'aWKT',
-      sparqlString: "<http://www.opengis.net/ont/geosparql#asWKT>",
+      sparqlString: "<http://www.w3.org/2004/02/skos/core#prefLabel>",
       range: "http://labs.sparna.fr/sparnatural-demo-dbpedia/onto#Text",
     },
     {
